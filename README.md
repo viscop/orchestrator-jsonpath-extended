@@ -20,8 +20,7 @@ Goessner behavior available as an explicit compatibility mode:
 The implementation is intentionally delivered as one self-contained Action so
 it can be copied, versioned, and reused without additional Action dependencies.
 
-The historical basis is Stefan Goessner's JSONPath 0.9.0 implementation from
-2007. The `^` parent operator follows the operator introduced by
+The historical basis is Stefan Goessner's JSONPath 0.9.0 implementation from 2007. The `^` parent operator follows the operator introduced by
 [JSONPath Plus](https://github.com/JSONPath-Plus/JSONPath), while the
 `??(...)` self-filter is an extension specific to this repository. JSONPath
 Plus is not a runtime dependency.
@@ -61,7 +60,16 @@ and VMware's example of a
 
 ## Related articles
 
-Coming soon. Work in progress.
+### Beyond JSONPath: Declarative Object Graph Queries in VCF/Aria Orchestrator
+
+For the motivation behind this project and a practical introduction to
+declarative object graph queries in VCF/Aria Orchestrator, see:
+
+[Beyond JSONPath: Declarative Object Graph Queries in VCF/Aria Orchestrator](https://www.visualdomain.ch/?p=227)
+
+The article compares imperative traversal with standard RFC 9535 queries and
+shows how the `^` parent operator and `??(...)` self-filter can be combined for
+bottom-up traversal of deeply nested object structures.
 
 ## Table of contents
 
