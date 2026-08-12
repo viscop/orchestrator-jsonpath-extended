@@ -20,6 +20,21 @@ Goessner behavior available as an explicit compatibility mode:
 The implementation is intentionally delivered as one self-contained Action so
 it can be copied, versioned, and reused without additional Action dependencies.
 
+The historical basis is Stefan Goessner's JSONPath 0.9.0 implementation from
+2007. The `^` parent operator follows the operator introduced by
+[JSONPath Plus](https://github.com/JSONPath-Plus/JSONPath), while the
+`??(...)` self-filter is an extension specific to this repository. JSONPath
+Plus is not a runtime dependency. Its maintainers currently describe that
+project as not actively maintained; this is context about the related project,
+not the reason this Action exists.
+
+## Why this exists
+
+Orchestrator inventories, configuration data, API responses, and workflow
+inputs often contain deeply nested object structures. This Action provides a
+declarative way to traverse and select from those structures without writing
+one-off chains of loops and property checks in every workflow or Action.
+
 ## Platform scope and naming
 
 The direct runtime of this code is **VCF Operations Orchestrator** (often
@@ -52,6 +67,7 @@ Coming soon. Work in progress.
 
 ## Table of contents
 
+- [Why this exists](#why-this-exists)
 - [Platform scope and naming](#platform-scope-and-naming)
 - [Related articles](#related-articles)
 - [Usage in VCF Operations Orchestrator](#usage-in-vcf-operations-orchestrator)
@@ -489,6 +505,23 @@ Result:
 
 Writing `.^` is not equivalent. The historical normalizer interprets the
 additional separator as recursive descent.
+
+### Bottom-up traversal with self-filtering
+
+Parent traversal and self-filtering can be combined to start at a deeply
+nested match, move upward, and test an ancestor in place. This query starts at
+positive stock entries, moves up to their edition, keeps hardcover editions,
+then moves up to the containing book:
+
+```text
+$.store.book[*].editions[*].stock[?(@.quantity > 0)]^^[??(@.format == 'hardcover')]^^.title
+```
+
+Result:
+
+```json
+["Sayings of the Century", "The Lord of the Rings"]
+```
 
 ## Result types
 

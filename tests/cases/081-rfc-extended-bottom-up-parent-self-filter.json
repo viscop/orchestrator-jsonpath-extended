@@ -1,0 +1,12 @@
+{
+  "name": "combine parent traversal and self-filtering in RFC9535_EXTENDED",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$.store.book[*].editions[*].stock[?(@.quantity > 0)]^^[??(@.format == 'hardcover')]^^.title",
+  "arg": {
+    "mode": "RFC9535_EXTENDED"
+  },
+  "expected": [
+    "Sayings of the Century",
+    "The Lord of the Rings"
+  ]
+}

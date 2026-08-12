@@ -201,8 +201,6 @@ var P = {
                 P.parent(x, path);
             else if (loc === "*")
                 P.walk(loc, x, val, path, function (m, l, x, v, p) { P.trace(m + ";" + x, v, p); });
-            else if (loc === "^")
-                P.parent(x, path);
             else if (loc === "..") {
                 P.trace(x, val, path);
                 P.walk(loc, x, val, path, function (m, l, x, v, p) { typeof v[m] === "object" && P.trace("..;" + x, v[m], p + ";" + m); });
