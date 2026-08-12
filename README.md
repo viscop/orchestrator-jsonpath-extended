@@ -24,9 +24,7 @@ The historical basis is Stefan Goessner's JSONPath 0.9.0 implementation from
 2007. The `^` parent operator follows the operator introduced by
 [JSONPath Plus](https://github.com/JSONPath-Plus/JSONPath), while the
 `??(...)` self-filter is an extension specific to this repository. JSONPath
-Plus is not a runtime dependency. Its maintainers currently describe that
-project as not actively maintained; this is context about the related project,
-not the reason this Action exists.
+Plus is not a runtime dependency.
 
 ## Why this exists
 
@@ -174,7 +172,7 @@ jsonPath(payload, "$.items[?(@.enabled)]", {
 });
 ```
 
-Applications that want RFC semantics together with the project-specific
+Applications that want RFC semantics together with the extended
 self-filter and parent operator can use:
 
 ```javascript
@@ -468,8 +466,9 @@ $..book[?(@.price > 10)].title
 
 > Available in `RFC9535_EXTENDED` and `GOESSNER_EXTENDED`.
 
-The standard child filter `?(...)` walks the children of the current value.
-The extended self-filter `??(...)` evaluates the current value itself.
+The standard filter `?(...)` evaluates the elements or member values of the
+current container. The extended self-filter `??(...)` evaluates the current
+value itself.
 
 Books that contain an ISBN:
 
