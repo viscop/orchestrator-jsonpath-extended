@@ -1,0 +1,13 @@
+{
+  "name": "return an empty nodelist in RFC9535_EXTENDED mode",
+  "obj": {
+    "items": [
+      { "enabled": false }
+    ]
+  },
+  "expr": "$.items[*][??(@.enabled == true)]",
+  "arg": {
+    "mode": "RFC9535_EXTENDED"
+  },
+  "expected": []
+}

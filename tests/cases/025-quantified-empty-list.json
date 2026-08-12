@@ -1,0 +1,12 @@
+{
+  "name": "exclude empty book arrays from an all-style condition",
+  "fixture": "stores-quantified.json",
+  "expr": "$.stores[?(@.book[?(@)] && !@.book[?(@.price > 100)])].name",
+  "expected": [
+    "Mixed Prices",
+    "Premium Only",
+    "Budget Only",
+    "Fixed Price",
+    "Mixed With Ten"
+  ]
+}

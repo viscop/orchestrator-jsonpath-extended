@@ -1,0 +1,8 @@
+{
+  "name": "use a nested filter as an existence test for numeric values",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$.store[??(@.book[?(@.price > 10)])].book[0].title",
+  "expected": [
+    "Sayings of the Century"
+  ]
+}

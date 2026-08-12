@@ -1,0 +1,11 @@
+{
+  "name": "preserve false for an unrecognized selector in GOESSNER_EXTENDED mode",
+  "obj": {
+    "items": []
+  },
+  "expr": "$.items[?@]",
+  "arg": {
+    "mode": "GOESSNER_EXTENDED"
+  },
+  "expected": false
+}

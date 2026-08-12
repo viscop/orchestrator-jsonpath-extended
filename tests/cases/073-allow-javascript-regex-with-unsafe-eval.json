@@ -1,0 +1,23 @@
+{
+  "name": "allow JavaScript regex literals with explicit unsafe eval opt in",
+  "obj": {
+    "items": [
+      {
+        "name": "matching",
+        "code": "ABC-123"
+      },
+      {
+        "name": "not matching",
+        "code": "XYZ-456"
+      }
+    ]
+  },
+  "expr": "$.items[?(/^ABC-/.test(@.code))].name",
+  "arg": {
+    "mode": "GOESSNER_EXTENDED",
+    "allowUnsafeEval": true
+  },
+  "expected": [
+    "matching"
+  ]
+}

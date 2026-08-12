@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run JSONPath Tests",
+      "type": "process",
+      "command": "node",
+      "args": [
+        "tests/run-tests.js"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Setup RFC 9535 Compliance Suite",
+      "type": "process",
+      "command": "node",
+      "args": [
+        "tests/setup-compliance-suite.js"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Run RFC 9535 Compliance Tests",
+      "type": "process",
+      "command": "node",
+      "args": [
+        "tests/run-compliance-tests.js"
+      ],
+      "group": "test",
+      "problemMatcher": []
+    }
+  ]
+}

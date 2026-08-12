@@ -1,0 +1,9 @@
+{
+  "name": "select a union of object properties",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$.store.book[0]['title','price']",
+  "expected": [
+    "Sayings of the Century",
+    8.95
+  ]
+}

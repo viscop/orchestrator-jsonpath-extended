@@ -1,0 +1,22 @@
+{
+  "name": "use RFC count with a nested query in GOESSNER_EXTENDED",
+  "obj": {
+    "items": [
+      {
+        "name": "matching",
+        "values": [5, 20, 30]
+      },
+      {
+        "name": "not matching",
+        "values": [1, 20]
+      }
+    ]
+  },
+  "expr": "$.items[?count(@.values[?(@ > 10)]) == 2].name",
+  "arg": {
+    "mode": "GOESSNER_EXTENDED"
+  },
+  "expected": [
+    "matching"
+  ]
+}

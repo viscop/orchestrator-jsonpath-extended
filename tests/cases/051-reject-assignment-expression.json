@@ -1,0 +1,6 @@
+{
+  "name": "reject assignments in filter expressions",
+  "fixture": "items-regex.json",
+  "expr": "$.items[?(@.status = 'active')].name",
+  "expectedError": "Unsafe or unsupported character '='"
+}

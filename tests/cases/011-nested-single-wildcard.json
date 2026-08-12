@@ -1,0 +1,9 @@
+{
+  "name": "filter through one nested filter level",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$.store.book[?(@.editions[?(@.format == 'hardcover')])].title",
+  "expected": [
+    "Sayings of the Century",
+    "The Lord of the Rings"
+  ]
+}

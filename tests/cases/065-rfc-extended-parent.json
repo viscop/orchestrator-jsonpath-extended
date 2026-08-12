@@ -1,0 +1,16 @@
+{
+  "name": "navigate to a parent with RFC9535_EXTENDED mode",
+  "obj": {
+    "label": "root",
+    "items": [
+      { "name": "child" }
+    ]
+  },
+  "expr": "$.items[0]^^.label",
+  "arg": {
+    "mode": "RFC9535_EXTENDED"
+  },
+  "expected": [
+    "root"
+  ]
+}

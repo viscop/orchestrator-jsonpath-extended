@@ -1,0 +1,17 @@
+{
+  "name": "return a normalized path after extended parent navigation",
+  "obj": {
+    "label": "root",
+    "items": [
+      { "name": "child" }
+    ]
+  },
+  "expr": "$.items[0]^^.label",
+  "arg": {
+    "mode": "RFC9535_EXTENDED",
+    "resultType": "PATH"
+  },
+  "expected": [
+    "$['label']"
+  ]
+}

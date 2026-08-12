@@ -1,0 +1,11 @@
+{
+  "name": "select direct child values through an array wildcard",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$.store.book[*].author",
+  "expected": [
+    "Nigel Rees",
+    "Evelyn Waugh",
+    "Herman Melville",
+    "J. R. R. Tolkien"
+  ]
+}

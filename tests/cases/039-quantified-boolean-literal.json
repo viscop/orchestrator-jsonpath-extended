@@ -1,0 +1,8 @@
+{
+  "name": "filter nested values with a Boolean literal",
+  "fixture": "stores-literals.json",
+  "expr": "$.stores[?(@.book[?(@.enabled == true)])].name",
+  "expected": [
+    "Mixed Flags"
+  ]
+}

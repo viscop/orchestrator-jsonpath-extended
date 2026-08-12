@@ -1,0 +1,85 @@
+{
+  "stores": [
+    {
+      "name": "Mixed Prices",
+      "any": "regular property",
+      "all": "regular property",
+      "book": [
+        {
+          "title": "Budget Book",
+          "price": 5
+        },
+        {
+          "title": "Premium Book",
+          "price": 15
+        }
+      ]
+    },
+    {
+      "name": "Premium Only",
+      "any": "regular property",
+      "all": "regular property",
+      "book": [
+        {
+          "title": "Architecture",
+          "price": 20
+        },
+        {
+          "title": "Automation",
+          "price": 30
+        }
+      ]
+    },
+    {
+      "name": "Budget Only",
+      "any": "regular property",
+      "all": "regular property",
+      "book": [
+        {
+          "title": "Introduction",
+          "price": 4
+        },
+        {
+          "title": "Quick Guide",
+          "price": 8
+        }
+      ]
+    },
+    {
+      "name": "Fixed Price",
+      "any": "regular property",
+      "all": "regular property",
+      "book": [
+        {
+          "title": "Fixed First",
+          "price": 10
+        },
+        {
+          "title": "Fixed Second",
+          "price": 10
+        }
+      ]
+    },
+    {
+      "name": "Mixed With Ten",
+      "any": "regular property",
+      "all": "regular property",
+      "book": [
+        {
+          "title": "Exact Limit",
+          "price": 10
+        },
+        {
+          "title": "Above Limit",
+          "price": 20
+        }
+      ]
+    },
+    {
+      "name": "Empty Store",
+      "any": "regular property",
+      "all": "regular property",
+      "book": []
+    }
+  ]
+}

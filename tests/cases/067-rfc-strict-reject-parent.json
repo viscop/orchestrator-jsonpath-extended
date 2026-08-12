@@ -1,0 +1,9 @@
+{
+  "name": "reject the parent operator in strict RFC9535 mode",
+  "useDefaultMode": true,
+  "obj": {
+    "items": []
+  },
+  "expr": "$.items^",
+  "expectedError": "Unexpected token '^'"
+}

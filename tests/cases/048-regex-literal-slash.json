@@ -1,0 +1,19 @@
+{
+  "name": "preserve a slash inside an RFC match pattern",
+  "obj": {
+    "items": [
+      {
+        "name": "matching",
+        "path": "ACME/Storage"
+      },
+      {
+        "name": "different",
+        "path": "ACME/Network"
+      }
+    ]
+  },
+  "expr": "$.items[?match(@.path, 'ACME/Storage')].name",
+  "expected": [
+    "matching"
+  ]
+}

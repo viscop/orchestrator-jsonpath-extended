@@ -1,0 +1,8 @@
+{
+  "name": "combine RFC match predicates with logical and",
+  "fixture": "items-regex.json",
+  "expr": "$.items[?match(@.code, 'ABC-[0-9]{3}') && match(@.status, 'active')].name",
+  "expected": [
+    "Primary active"
+  ]
+}

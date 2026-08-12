@@ -1,0 +1,28 @@
+{
+  "name": "allow JavaScript some with explicit unsafe eval opt in",
+  "obj": {
+    "groups": [
+      {
+        "name": "matching",
+        "values": [
+          1,
+          20
+        ]
+      },
+      {
+        "name": "not matching",
+        "values": [
+          1,
+          2
+        ]
+      }
+    ]
+  },
+  "expr": "$.groups[?(@.values.some(function (value) { return value > 10 }))].name",
+  "arg": {
+    "allowUnsafeEval": true
+  },
+  "expected": [
+    "matching"
+  ]
+}

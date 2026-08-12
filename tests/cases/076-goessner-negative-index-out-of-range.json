@@ -1,0 +1,14 @@
+{
+  "name": "return no match for an out of range negative index in GOESSNER_EXTENDED",
+  "obj": {
+    "items": [
+      "first",
+      "last"
+    ]
+  },
+  "expr": "$.items[-3]",
+  "arg": {
+    "mode": "GOESSNER_EXTENDED"
+  },
+  "expected": false
+}

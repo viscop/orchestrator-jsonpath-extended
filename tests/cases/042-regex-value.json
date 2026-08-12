@@ -1,0 +1,9 @@
+{
+  "name": "filter a property value with RFC match",
+  "fixture": "items-regex.json",
+  "expr": "$.items[?match(@.code, 'ABC-[0-9]{3}')].name",
+  "expected": [
+    "Primary active",
+    "Primary inactive"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "combine unsafe JavaScript evaluation with a nested filter",
+  "fixture": "stores-quantified.json",
+  "expr": "$.stores[?(@.book[?(@.price > 10)] && @.book.some(function (book) { return book.title === 'Premium Book' }))].name",
+  "arg": {
+    "allowUnsafeEval": true
+  },
+  "expected": [
+    "Mixed Prices"
+  ]
+}

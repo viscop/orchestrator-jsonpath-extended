@@ -1,0 +1,9 @@
+{
+  "name": "filter values with a comparison expression",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$.store.book[?(@.price < 10)].title",
+  "expected": [
+    "Sayings of the Century",
+    "Moby Dick"
+  ]
+}

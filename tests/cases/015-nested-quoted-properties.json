@@ -1,0 +1,8 @@
+{
+  "name": "use quoted properties in a nested filter",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$.store.book[?(@['editions'][?(@['tags'][?(@ == 'fantasy')])])].title",
+  "expected": [
+    "The Lord of the Rings"
+  ]
+}

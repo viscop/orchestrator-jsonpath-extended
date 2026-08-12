@@ -1,0 +1,15 @@
+{
+  "name": "reject JavaScript regex literals without unsafe eval",
+  "obj": {
+    "items": [
+      {
+        "code": "ABC-123"
+      }
+    ]
+  },
+  "expr": "$.items[?(/ABC/.test(@.code))]",
+  "arg": {
+    "mode": "GOESSNER_EXTENDED"
+  },
+  "expectedError": "use match() or search()"
+}

@@ -1,0 +1,8 @@
+{
+  "name": "read properties with bracket notation",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$['store']['book'][0]['title']",
+  "expected": [
+    "Sayings of the Century"
+  ]
+}

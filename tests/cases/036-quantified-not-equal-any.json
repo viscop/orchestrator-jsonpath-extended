@@ -1,0 +1,11 @@
+{
+  "name": "select stores with any nested price different from the limit",
+  "fixture": "stores-quantified.json",
+  "expr": "$.stores[?(@.book[?(@.price != 10)])].name",
+  "expected": [
+    "Mixed Prices",
+    "Premium Only",
+    "Budget Only",
+    "Mixed With Ten"
+  ]
+}

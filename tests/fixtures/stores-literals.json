@@ -1,0 +1,34 @@
+{
+  "stores": [
+    {
+      "name": "Mixed Flags",
+      "book": [
+        {
+          "enabled": false,
+          "note": null
+        },
+        {
+          "enabled": true,
+          "note": null
+        }
+      ]
+    },
+    {
+      "name": "False Flags",
+      "book": [
+        {
+          "enabled": false,
+          "note": null
+        },
+        {
+          "enabled": false,
+          "note": "configured"
+        }
+      ]
+    },
+    {
+      "name": "No Books",
+      "book": []
+    }
+  ]
+}

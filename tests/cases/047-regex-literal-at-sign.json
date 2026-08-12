@@ -1,0 +1,19 @@
+{
+  "name": "preserve an at sign inside an RFC search pattern",
+  "obj": {
+    "contacts": [
+      {
+        "name": "Operations",
+        "email": "operations@example.com"
+      },
+      {
+        "name": "External",
+        "email": "external@other.test"
+      }
+    ]
+  },
+  "expr": "$.contacts[?search(@.email, '@example[.]com$')].name",
+  "expected": [
+    "Operations"
+  ]
+}

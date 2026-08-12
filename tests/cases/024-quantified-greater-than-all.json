@@ -1,0 +1,8 @@
+{
+  "name": "select non-empty stores without a price at or below the limit",
+  "fixture": "stores-quantified.json",
+  "expr": "$.stores[?(@.book[?(@)] && !@.book[?(@.price <= 10)])].name",
+  "expected": [
+    "Premium Only"
+  ]
+}

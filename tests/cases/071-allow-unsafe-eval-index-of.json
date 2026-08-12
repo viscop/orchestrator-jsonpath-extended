@@ -1,0 +1,23 @@
+{
+  "name": "allow JavaScript indexOf with explicit unsafe eval opt in",
+  "obj": {
+    "items": [
+      {
+        "name": "matching",
+        "values": ["alpha", "target", "omega"]
+      },
+      {
+        "name": "not-matching",
+        "values": ["alpha", "omega"]
+      }
+    ]
+  },
+  "expr": "$.items[?(@.values.indexOf('target') >= 0)].name",
+  "arg": {
+    "mode": "GOESSNER_EXTENDED",
+    "allowUnsafeEval": true
+  },
+  "expected": [
+    "matching"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "move to an ancestor with the extended parent operator",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$.store.book[0].editions[0]^^.title",
+  "expected": [
+    "Sayings of the Century"
+  ]
+}

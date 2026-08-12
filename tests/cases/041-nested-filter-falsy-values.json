@@ -1,0 +1,27 @@
+{
+  "name": "evaluate false zero and null as nested filter candidates",
+  "obj": {
+    "groups": [
+      {
+        "name": "falsy values",
+        "values": [
+          false,
+          0,
+          null
+        ]
+      },
+      {
+        "name": "truthy values",
+        "values": [
+          true,
+          1,
+          "value"
+        ]
+      }
+    ]
+  },
+  "expr": "$.groups[?(@.values[?(@ === false || @ === 0 || @ === null)])].name",
+  "expected": [
+    "falsy values"
+  ]
+}

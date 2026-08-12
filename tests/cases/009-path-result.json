@@ -1,0 +1,12 @@
+{
+  "name": "return normalized result paths",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$.store.book[?(@.price < 10)].title",
+  "arg": {
+    "resultType": "PATH"
+  },
+  "expected": [
+    "$['store']['book'][0]['title']",
+    "$['store']['book'][2]['title']"
+  ]
+}

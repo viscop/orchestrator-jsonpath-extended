@@ -1,0 +1,11 @@
+{
+  "name": "combine nested filters with PATH results",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$.store.book[?(@.editions[?(@.tags[?(@ == 'fantasy')])])].title",
+  "arg": {
+    "resultType": "PATH"
+  },
+  "expected": [
+    "$['store']['book'][3]['title']"
+  ]
+}

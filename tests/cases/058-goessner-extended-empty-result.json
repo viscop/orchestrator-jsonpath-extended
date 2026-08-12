@@ -1,0 +1,11 @@
+{
+  "name": "preserve false for no match in GOESSNER_EXTENDED mode",
+  "obj": {
+    "items": [1, 2, 3]
+  },
+  "expr": "$.items[?(@ > 10)]",
+  "arg": {
+    "mode": "GOESSNER_EXTENDED"
+  },
+  "expected": false
+}

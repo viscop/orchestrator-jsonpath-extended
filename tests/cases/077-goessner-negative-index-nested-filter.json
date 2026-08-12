@@ -1,0 +1,28 @@
+{
+  "name": "use a negative index in a nested GOESSNER_EXTENDED filter path",
+  "obj": {
+    "items": [
+      {
+        "name": "matching",
+        "values": [
+          "first",
+          "target"
+        ]
+      },
+      {
+        "name": "not matching",
+        "values": [
+          "target",
+          "last"
+        ]
+      }
+    ]
+  },
+  "expr": "$.items[?(@.values[-1] == 'target')].name",
+  "arg": {
+    "mode": "GOESSNER_EXTENDED"
+  },
+  "expected": [
+    "matching"
+  ]
+}

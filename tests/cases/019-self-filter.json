@@ -1,0 +1,9 @@
+{
+  "name": "apply the extended self-filter to the current value",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$.store.book[*][??(@.isbn)].title",
+  "expected": [
+    "Moby Dick",
+    "The Lord of the Rings"
+  ]
+}

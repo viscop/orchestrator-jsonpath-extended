@@ -1,0 +1,6 @@
+{
+  "name": "reject arbitrary function calls in filter expressions",
+  "fixture": "items-regex.json",
+  "expr": "$.items[?(match(@.status, '[Aa]ctive') || System.getModule('malicious'))].name",
+  "expectedError": "Unsafe or unsupported identifier 'System'"
+}

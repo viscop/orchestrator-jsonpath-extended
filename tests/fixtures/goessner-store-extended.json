@@ -1,0 +1,140 @@
+{
+  "store": {
+    "book": [
+      {
+        "category": "reference",
+        "author": "Nigel Rees",
+        "title": "Sayings of the Century",
+        "price": 8.95,
+        "editions": [
+          {
+            "format": "hardcover",
+            "tags": [
+              "print",
+              "illustrated"
+            ],
+            "stock": [
+              {
+                "warehouse": "zurich",
+                "quantity": 3
+              },
+              {
+                "warehouse": "berlin",
+                "quantity": 0
+              }
+            ]
+          },
+          {
+            "format": "ebook",
+            "tags": [
+              "digital"
+            ],
+            "stock": []
+          }
+        ],
+        "availability": {
+          "ch": "available",
+          "de": "backorder"
+        }
+      },
+      {
+        "category": "fiction",
+        "author": "Evelyn Waugh",
+        "title": "Sword of Honour",
+        "price": 12.99,
+        "editions": [
+          {
+            "format": "paperback",
+            "tags": [
+              "print"
+            ],
+            "stock": [
+              {
+                "warehouse": "london",
+                "quantity": 5
+              }
+            ]
+          },
+          {
+            "format": "ebook",
+            "tags": [
+              "digital"
+            ],
+            "stock": []
+          }
+        ],
+        "availability": {
+          "ch": "backorder",
+          "uk": "available"
+        }
+      },
+      {
+        "category": "fiction",
+        "author": "Herman Melville",
+        "title": "Moby Dick",
+        "isbn": "0-553-21311-3",
+        "price": 8.99,
+        "editions": [
+          {
+            "format": "paperback",
+            "tags": [
+              "print",
+              "classic"
+            ],
+            "stock": [
+              {
+                "warehouse": "zurich",
+                "quantity": 7
+              }
+            ]
+          },
+          {
+            "format": "audiobook",
+            "tags": [
+              "audio",
+              "classic"
+            ],
+            "stock": []
+          }
+        ]
+      },
+      {
+        "category": "fiction",
+        "author": "J. R. R. Tolkien",
+        "title": "The Lord of the Rings",
+        "isbn": "0-395-19395-8",
+        "price": 22.99,
+        "editions": [
+          {
+            "format": "hardcover",
+            "tags": [
+              "print",
+              "fantasy"
+            ],
+            "stock": [
+              {
+                "warehouse": "berlin",
+                "quantity": 4
+              }
+            ]
+          },
+          {
+            "format": "audiobook",
+            "tags": [
+              "audio",
+              "fantasy"
+            ]
+          }
+        ],
+        "availability": {
+          "ch": "available",
+          "uk": "available"
+        }
+      }
+    ],
+    "bicycle": {
+      "color": "red",
+      "price": 19.95
+    }
+  }
+}

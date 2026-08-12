@@ -1,0 +1,26 @@
+{
+  "name": "use RFC value with an exact single-node query in GOESSNER_EXTENDED",
+  "obj": {
+    "items": [
+      {
+        "name": "matching",
+        "codes": ["target"]
+      },
+      {
+        "name": "multiple nodes",
+        "codes": ["target", "target"]
+      },
+      {
+        "name": "no nodes",
+        "codes": ["other"]
+      }
+    ]
+  },
+  "expr": "$.items[?value(@.codes[?(@ == 'target')]) == 'target'].name",
+  "arg": {
+    "mode": "GOESSNER_EXTENDED"
+  },
+  "expected": [
+    "matching"
+  ]
+}

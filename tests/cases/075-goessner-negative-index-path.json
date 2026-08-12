@@ -1,0 +1,17 @@
+{
+  "name": "normalize a negative array index path in GOESSNER_EXTENDED",
+  "obj": {
+    "items": [
+      "first",
+      "last"
+    ]
+  },
+  "expr": "$.items[-1]",
+  "arg": {
+    "mode": "GOESSNER_EXTENDED",
+    "resultType": "PATH"
+  },
+  "expected": [
+    "$['items'][1]"
+  ]
+}

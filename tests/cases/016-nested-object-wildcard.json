@@ -1,0 +1,10 @@
+{
+  "name": "filter member values of a nested object",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$.store.book[?(@.availability[?(@ == 'available')])].title",
+  "expected": [
+    "Sayings of the Century",
+    "Sword of Honour",
+    "The Lord of the Rings"
+  ]
+}

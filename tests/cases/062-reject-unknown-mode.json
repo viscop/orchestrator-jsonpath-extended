@@ -1,0 +1,11 @@
+{
+  "name": "reject an unknown compatibility mode",
+  "obj": {
+    "items": []
+  },
+  "expr": "$.items",
+  "arg": {
+    "mode": "RFC"
+  },
+  "expectedError": "mode must be 'RFC9535', 'RFC9535_EXTENDED', or 'GOESSNER_EXTENDED'"
+}

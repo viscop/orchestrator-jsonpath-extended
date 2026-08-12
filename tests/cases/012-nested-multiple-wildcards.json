@@ -1,0 +1,9 @@
+{
+  "name": "filter across several nested filter levels",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$.store.book[?(@.editions[?(@.stock[?(@.warehouse == 'zurich')])])].title",
+  "expected": [
+    "Sayings of the Century",
+    "Moby Dick"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "allow JavaScript map with explicit unsafe eval opt in",
+  "obj": {
+    "groups": [
+      {
+        "name": "matching",
+        "values": [
+          5,
+          10
+        ]
+      },
+      {
+        "name": "not matching",
+        "values": [
+          1,
+          2
+        ]
+      }
+    ]
+  },
+  "expr": "$.groups[?(@.values.map(function (value) { return value * 2 }).indexOf(20) >= 0)].name",
+  "arg": {
+    "allowUnsafeEval": true
+  },
+  "expected": [
+    "matching"
+  ]
+}

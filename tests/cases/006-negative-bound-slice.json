@@ -1,0 +1,9 @@
+{
+  "name": "select an array slice with a negative bound",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$.store.book[-2:].title",
+  "expected": [
+    "Moby Dick",
+    "The Lord of the Rings"
+  ]
+}

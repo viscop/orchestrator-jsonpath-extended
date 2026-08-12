@@ -1,0 +1,11 @@
+{
+  "name": "find properties recursively",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$..author",
+  "expected": [
+    "Nigel Rees",
+    "Evelyn Waugh",
+    "Herman Melville",
+    "J. R. R. Tolkien"
+  ]
+}

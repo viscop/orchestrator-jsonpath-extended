@@ -1,0 +1,9 @@
+{
+  "name": "reject the self-filter in strict RFC9535 mode",
+  "useDefaultMode": true,
+  "obj": [
+    true
+  ],
+  "expr": "$[??(@)]",
+  "expectedError": "Self-filter is not valid RFC 9535 syntax"
+}

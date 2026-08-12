@@ -1,0 +1,10 @@
+{
+  "name": "select stores through a nested greater-than filter",
+  "fixture": "stores-quantified.json",
+  "expr": "$.stores[?(@.book[?(@.price > 10)])].name",
+  "expected": [
+    "Mixed Prices",
+    "Premium Only",
+    "Mixed With Ten"
+  ]
+}

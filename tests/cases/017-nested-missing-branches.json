@@ -1,0 +1,9 @@
+{
+  "name": "ignore missing branches during a nested filter",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$.store.book[?(@.editions[?(@.stock[?(@.warehouse == 'berlin')])])].title",
+  "expected": [
+    "Sayings of the Century",
+    "The Lord of the Rings"
+  ]
+}

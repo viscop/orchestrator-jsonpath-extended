@@ -1,0 +1,9 @@
+{
+  "name": "keep any and all available as regular property names",
+  "fixture": "stores-quantified.json",
+  "expr": "$.stores[0]['any','all']",
+  "expected": [
+    "regular property",
+    "regular property"
+  ]
+}

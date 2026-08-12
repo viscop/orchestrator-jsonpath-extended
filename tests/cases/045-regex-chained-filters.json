@@ -1,0 +1,8 @@
+{
+  "name": "chain child and self filters with RFC match",
+  "fixture": "items-regex.json",
+  "expr": "$.items[?search(@.code, '^ABC-')][??match(@.status, 'active')].name",
+  "expected": [
+    "Primary active"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "return an empty nodelist by default when RFC9535 finds no match",
+  "useDefaultMode": true,
+  "obj": {
+    "items": [1, 2, 3]
+  },
+  "expr": "$.items[?@ > 10]",
+  "expected": []
+}

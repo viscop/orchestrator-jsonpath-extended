@@ -1,0 +1,9 @@
+{
+  "name": "use an array index inside a nested filter",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$.store.book[?(@.editions[?(@.stock && @.stock[0] && @.stock[0].warehouse == 'zurich')])].title",
+  "expected": [
+    "Sayings of the Century",
+    "Moby Dick"
+  ]
+}

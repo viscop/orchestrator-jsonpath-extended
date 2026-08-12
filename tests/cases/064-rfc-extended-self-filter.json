@@ -1,0 +1,17 @@
+{
+  "name": "apply the self-filter with RFC semantics in RFC9535_EXTENDED mode",
+  "obj": {
+    "items": [
+      { "name": "enabled", "enabled": true },
+      { "name": "disabled", "enabled": false },
+      { "name": "missing" }
+    ]
+  },
+  "expr": "$.items[*][??(@.enabled == true)].name",
+  "arg": {
+    "mode": "RFC9535_EXTENDED"
+  },
+  "expected": [
+    "enabled"
+  ]
+}

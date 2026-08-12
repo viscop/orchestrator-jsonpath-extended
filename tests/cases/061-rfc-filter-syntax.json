@@ -1,0 +1,14 @@
+{
+  "name": "evaluate RFC9535 filter syntax in the default mode",
+  "useDefaultMode": true,
+  "obj": {
+    "items": [
+      { "name": "small", "price": 5 },
+      { "name": "large", "price": 15 }
+    ]
+  },
+  "expr": "$.items[?@.price >= 10].name",
+  "expected": [
+    "large"
+  ]
+}

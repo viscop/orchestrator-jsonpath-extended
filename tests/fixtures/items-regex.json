@@ -1,0 +1,24 @@
+{
+  "items": [
+    {
+      "name": "Primary active",
+      "code": "ABC-123",
+      "status": "active"
+    },
+    {
+      "name": "Primary inactive",
+      "code": "ABC-999",
+      "status": "inactive"
+    },
+    {
+      "name": "Secondary active",
+      "code": "XYZ-123",
+      "status": "ACTIVE"
+    },
+    {
+      "name": "Legacy",
+      "code": "LEG-001",
+      "status": "legacy"
+    }
+  ]
+}

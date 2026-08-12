@@ -1,0 +1,8 @@
+{
+  "name": "require all nested values to equal null",
+  "fixture": "stores-literals.json",
+  "expr": "$.stores[?(@.book[?(@)] && !@.book[?(@.note != null)])].name",
+  "expected": [
+    "Mixed Flags"
+  ]
+}

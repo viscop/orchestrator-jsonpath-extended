@@ -1,0 +1,9 @@
+{
+  "name": "evaluate RFC match across recursive candidates",
+  "fixture": "items-regex.json",
+  "expr": "$..[?match(@.code, '[Aa][Bb][Cc]-[0-9]{3}')].name",
+  "expected": [
+    "Primary active",
+    "Primary inactive"
+  ]
+}

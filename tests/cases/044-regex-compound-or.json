@@ -1,0 +1,9 @@
+{
+  "name": "combine RFC regex functions with logical or",
+  "fixture": "items-regex.json",
+  "expr": "$.items[?search(@.code, '^XYZ-') || match(@.status, 'legacy')].name",
+  "expected": [
+    "Secondary active",
+    "Legacy"
+  ]
+}

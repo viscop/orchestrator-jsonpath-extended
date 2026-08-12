@@ -1,0 +1,28 @@
+{
+  "name": "allow JavaScript every with explicit unsafe eval opt in",
+  "obj": {
+    "items": [
+      {
+        "name": "all-even",
+        "values": [2, 4, 6]
+      },
+      {
+        "name": "mixed",
+        "values": [2, 3, 4]
+      },
+      {
+        "name": "empty",
+        "values": []
+      }
+    ]
+  },
+  "expr": "$.items[?(@.values.every(function (value) { return value % 2 === 0; }))].name",
+  "arg": {
+    "mode": "GOESSNER_EXTENDED",
+    "allowUnsafeEval": true
+  },
+  "expected": [
+    "all-even",
+    "empty"
+  ]
+}

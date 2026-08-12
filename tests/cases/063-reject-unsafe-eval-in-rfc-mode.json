@@ -1,0 +1,12 @@
+{
+  "name": "reject unsafe JavaScript evaluation in RFC9535 mode",
+  "useDefaultMode": true,
+  "obj": {
+    "items": []
+  },
+  "expr": "$.items",
+  "arg": {
+    "allowUnsafeEval": true
+  },
+  "expectedError": "allowUnsafeEval is only available in GOESSNER_EXTENDED mode"
+}

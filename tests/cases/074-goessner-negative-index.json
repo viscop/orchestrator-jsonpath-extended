@@ -1,0 +1,14 @@
+{
+  "name": "select an array element by negative index in GOESSNER_EXTENDED",
+  "obj": {
+    "items": [
+      "first",
+      "middle",
+      "last"
+    ]
+  },
+  "expr": "$.items[-1]",
+  "expected": [
+    "last"
+  ]
+}

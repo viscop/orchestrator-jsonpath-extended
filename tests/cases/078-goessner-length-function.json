@@ -1,0 +1,22 @@
+{
+  "name": "use RFC length in GOESSNER_EXTENDED",
+  "obj": {
+    "items": [
+      {
+        "name": "matching",
+        "label": "A😀"
+      },
+      {
+        "name": "not matching",
+        "label": "ABC"
+      }
+    ]
+  },
+  "expr": "$.items[?length(@.label) == 2].name",
+  "arg": {
+    "mode": "GOESSNER_EXTENDED"
+  },
+  "expected": [
+    "matching"
+  ]
+}

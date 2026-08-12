@@ -1,0 +1,6 @@
+{
+  "name": "reject constructor based code execution in filter expressions",
+  "fixture": "items-regex.json",
+  "expr": "$.items[?(@.status.constructor.constructor('return true')())].name",
+  "expectedError": "Unsafe or unsupported token '('"
+}

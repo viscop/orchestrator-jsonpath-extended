@@ -1,0 +1,8 @@
+{
+  "name": "filter values in a terminal nested array",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$.store.book[?(@.editions[?(@.tags[?(@ == 'classic')])])].title",
+  "expected": [
+    "Moby Dick"
+  ]
+}

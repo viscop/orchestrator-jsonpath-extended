@@ -1,0 +1,9 @@
+{
+  "name": "select a forward array slice",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$.store.book[0:2].title",
+  "expected": [
+    "Sayings of the Century",
+    "Sword of Honour"
+  ]
+}

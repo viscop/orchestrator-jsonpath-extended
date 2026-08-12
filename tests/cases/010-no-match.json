@@ -1,0 +1,6 @@
+{
+  "name": "return false when no value matches",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$.store.book[?(@.price > 100)].title",
+  "expected": false
+}

@@ -1,0 +1,19 @@
+{
+  "name": "require boolean true for unsafe eval opt in",
+  "obj": {
+    "groups": [
+      {
+        "name": "matching",
+        "values": [
+          1,
+          20
+        ]
+      }
+    ]
+  },
+  "expr": "$.groups[?(@.values.some(function (value) { return value > 10 }))].name",
+  "arg": {
+    "allowUnsafeEval": "true"
+  },
+  "expectedError": "Unsafe or unsupported token '('"
+}

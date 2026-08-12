@@ -1,0 +1,23 @@
+{
+  "name": "find matching books when store is an array",
+  "obj": {
+    "store": [
+      {
+        "book": [
+          {
+            "title": "Cheap Book",
+            "price": 5
+          },
+          {
+            "title": "Expensive Book",
+            "price": 15
+          }
+        ]
+      }
+    ]
+  },
+  "expr": "$..book[?(@.price > 10)].title",
+  "expected": [
+    "Expensive Book"
+  ]
+}

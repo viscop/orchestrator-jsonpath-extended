@@ -1,0 +1,8 @@
+{
+  "name": "evaluate a computed array index",
+  "fixture": "goessner-store-extended.json",
+  "expr": "$.store.book[(@.length-1)].title",
+  "expected": [
+    "The Lord of the Rings"
+  ]
+}

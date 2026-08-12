@@ -1,0 +1,8 @@
+{
+  "name": "filter nested values with a string literal",
+  "fixture": "stores-quantified.json",
+  "expr": "$.stores[?(@.book[?(@.title == 'Premium Book')])].name",
+  "expected": [
+    "Mixed Prices"
+  ]
+}

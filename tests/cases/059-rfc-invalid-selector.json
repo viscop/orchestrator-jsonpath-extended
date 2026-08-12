@@ -1,0 +1,9 @@
+{
+  "name": "reject malformed syntax in the default RFC9535 mode",
+  "useDefaultMode": true,
+  "obj": {
+    "items": []
+  },
+  "expr": "$.items[",
+  "expectedError": "jsonPath RFC9535"
+}
