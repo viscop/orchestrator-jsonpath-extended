@@ -1,0 +1,17 @@
+{
+  "name": "combine Unicode categories with I-Regexp search and quantifiers",
+  "obj": {
+    "values": [
+      "prefix Ж suffix",
+      "digits ١٢",
+      "lowercase only",
+      "one digit ١"
+    ]
+  },
+  "expr": "$.values[?search(@, '\\\\p{Lu}|\\\\p{Nd}{2}') ]",
+  "useDefaultMode": true,
+  "expected": [
+    "prefix Ж suffix",
+    "digits ١٢"
+  ]
+}

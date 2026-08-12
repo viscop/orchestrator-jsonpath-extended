@@ -2932,114 +2932,594 @@ function rfcLengthValue(value) {
     return RFC_NOTHING;
 }
 
+/** Maximum UTF-16 source length accepted for one I-Regexp. */
+var RFC_IREGEXP_MAX_PATTERN_LENGTH = 4096;
+
+/** Maximum number of NFA states compiled from one I-Regexp. */
+var RFC_IREGEXP_MAX_STATES = 16384;
+
+/** Unicode 16.0 category ranges, delta-encoded as base-36 pairs. */
+var RFC_UNICODE_CATEGORY_DATA = {
+Ll: "2p.p.1m.0.15.n.1.7.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.1.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.1.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.2.0.1.0.1.2.2.0.1.0.2.0.3.1.4.0.2.0.3.2.2.0.2.0.1.0.1.0.2.0.1.1.1.0.2.0.3.0.1.0.2.1.2.2.6.0.2.0.2.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.1.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.1.2.0.1.0.3.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.6.2.0.2.1.1.0.4.0.1.0.1.0.1.0.1.1w.1.q.5d.0.1.0.3.0.3.2.i.0.r.y.1.1.3.2.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.4.1.0.2.0.2.1.1f.1b.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.9.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.2.0.1.0.1.0.1.0.1.0.1.0.1.1.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1c.14.287.16.2.2.l4.5.1oi.8.1.0.39.17.1r.c.1.x.2u.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.8.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.8.8.5.a.7.8.7.8.5.a.7.8.7.8.d.2.7.8.7.8.7.8.4.1.1.6.0.3.2.1.1.8.3.2.1.8.7.a.2.1.1.7m.0.3.1.3.0.r.0.4.0.4.0.2.1.8.3.4.0.1h.0.23v.1b.1.0.3.1.1.0.1.0.1.0.4.0.1.1.1.5.5.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.1.7.0.1.0.4.0.c.11.1.0.5.0.nwz.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.j.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.3r.0.1.0.1.0.1.0.1.0.1.0.1.2.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.7.1.0.1.0.2.0.1.0.1.0.1.0.1.0.4.0.1.0.2.0.1.2.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.5.0.5.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.4.0.1.0.2.0.3.0.1.0.1.0.1.0.1.0.1.0.q.0.3.0.mt.16.5.8.7.27.fnk.6.c.4.tl.p.y5.13.3s.z.4b.a.1.e.1.6.1.1.1dv.1e.3h.l.27u.v.gw0.v.k2i.p.q.6.1.h.q.p.q.3.1.0.1.6.1.a.q.p.q.p.q.p.q.p.q.p.q.p.q.p.q.p.q.r.s.o.1.5.q.o.1.5.q.o.1.5.q.o.1.5.q.o.1.5.1.0.1f8.9.1.j.6.5.1yv.x",
+    Lm: "j4.h.4.b.e.4.7.0.1.0.3p.0.5.0.da.0.6e.0.4k.1.7h.1.4.0.v.0.9.0.3.0.4g.0.4n.0.yc.0.3j.0.fp.0.1cq.0.2z.0.gz.0.cw.5.4u.1q.d.0.y.10.j5.0.d.0.g.c.2cf.1.6p.0.5b.0.d1.0.17.4.5.0.2p.1.2l.2.lxy.0.yq.5.7i.0.36.0.s.1.3d.8.28.0.n.0.2x.2.3.1.d1.0.m.0.3t.0.30.0.l.1.2v.3.9.0.gli.0.19.1.1k0.5.1.15.1.8.13n.0.w.0.ij4.3.e4.2.14.1.fa.c.1s.1.1.0.cng.3.1.6.1.1.9ip.1p.5l.6.q5.0.v3.0",
+    Lo: "4q.0.f.0.74.0.4.3.5s.0.mz.q.4.3.19.v.1.9.z.1.1.2q.1.0.o.1.a.2.2.0.g.0.1.t.t.2g.b.0.o.w.l.l.16.o.7.a.5.n.1.5.h.14.1n.1h.3.0.i.0.7.9.g.e.4.7.2.1.2.l.1.6.1.0.3.3.3.0.g.0.d.1.1.2.e.1.a.0.8.5.4.1.2.l.1.6.1.1.1.1.1.1.v.3.1.0.j.2.g.8.1.2.1.l.1.6.1.1.1.4.3.0.i.0.f.1.n.0.b.7.2.1.2.l.1.6.1.1.1.4.3.0.u.1.1.2.f.0.h.0.1.5.3.2.1.3.3.1.1.0.1.1.3.1.3.2.3.b.m.0.1g.7.1.2.1.m.1.f.3.0.q.2.2.0.2.1.u.0.4.7.1.2.1.m.1.9.1.4.3.0.v.1.1.1.f.1.h.8.1.2.1.14.2.0.g.0.5.2.8.2.o.5.5.h.3.n.1.8.1.0.2.6.1m.1b.1.1.c.5.1n.1.1.0.1.4.1.n.1.0.1.9.1.1.9.0.2.4.n.3.w.0.1r.7.1.z.r.4.37.16.k.0.g.5.4.3.3.0.3.1.7.2.4.c.c.0.35.94.1.3.2.6.1.0.1.3.2.14.1.3.2.w.1.3.2.6.1.0.1.3.2.e.1.1k.1.3.2.1u.11.f.35.h7.2.g.1.p.5.22.6.7.7.h.d.i.e.h.e.c.1.2.f.1f.14.0.1v.y.1.1g.7.4.2.x.1.0.5.1x.a.u.1d.t.2.4.b.17.4.p.1i.m.9.1g.4w.1a.h.7.1i.t.d.1.a.17.q.z.15.2.a.t.35.3.1.5.1.1.3.0.u2.3.2d3.1j.o.m.9.6.1.6.1.6.1.6.1.6.1.6.1.6.1.6.fb.0.1h.0.4.2d.8.0.1.2h.4.0.5.16.1.2l.h.v.1c.f.e8.533.1s.g7o.1.vq.1v.13.8.7f.4.f.a.1.1u.0.1d.1x.4p.0.2v.0.3.6.1.2.1.3.1.m.t.1f.e.1d.1q.5.3.0.1.1.b.r.a.m.p.s.7.1a.19.4.2.8.a.4.1.14.n.2.1.7.k.f.1.5.3.0.3.1d.1.0.3.1.2.4.2.0.1.0.o.1.3.a.7.0.e.5.2.5.2.5.9.6.1.6.41.y.t.8mb.c.m.4.1c.6is.a5.2.2x.1v.0.1.9.1.c.1.4.1.0.1.1.1.1.1.2z.x.a2.i.1r.2.1h.14.b.38.4.1.3q.2x.9.1.18.2.u.3.5.2.5.2.5.2.2.z.b.1.p.1.i.1.1.1.e.2.d.y.3e.at.s.3.1c.1b.v.d.j.1.7.6.11.a.t.2.z.4.7.3k.25.2q.13.8.1f.2k.1f.c.8m.9.l.a.7.48.5.2.0.1.17.1.1.3.0.2.m.a.m.9.u.1t.i.1.1.a.l.a.p.1y.1j.6.1.1s.0.f.3.1.2.1.s.16.s.3.s.z.7.1.r.r.1h.a.l.a.i.d.h.32.20.53.z.12.3.1.0.8g.15.6.1.g.2.1n.s.a.0.8.l.16.h.1a.k.r.m.c.1g.1l.1.2.0.d.18.w.o.q.z.t.0.2.0.8.y.3.0.c.1b.e.3.l.0.1.0.z.h.1.o.j.1.1r.6.1.0.1.3.1.e.1.9.7.1a.12.7.2.1.2.l.1.6.1.1.1.4.3.0.i.0.c.4.u.9.1.0.2.0.1.11.1.0.p.0.1.0.18.1g.i.3.k.2.u.1b.k.1.1.0.54.1a.15.3.10.1b.k.0.1n.16.d.0.1z.q.11.6.55.17.5v.7.2.0.2.7.1.1.1.n.f.0.1.0.2m.7.2.12.g.0.1.0.s.0.a.13.7.0.l.0.b.19.j.0.i.20.5j.w.v.8.1.10.h.0.1d.t.34.6.1.1.1.11.l.0.p.5.1.1.1.v.e.0.93.i.f.0.1.c.1.x.3g.0.27.pl.6e.5f.218.2o.f.tr.h.5.p.32y.5.g6.5a1.t.1cy.fs.7.u.h.26.h.t.i.1b.1f.k.5.i.c3.13.b9.22.5.0.4v.4qf.8.yd.15.9.6wn.82.f.0.t.2.2.0.e.3.8.az.1s4.2y.5.c.3.8.7.9.6sw.0.dx.18.x.0.8x.t.i.17.dg.q.6d.t.2.0.dr.6.1.3.1.1.1.e.1.5g.117.3.1.q.1.1.1.0.2.0.1.9.1.3.1.0.1.0.6.0.4.0.1.0.1.0.1.2.1.1.1.0.2.0.1.0.1.0.1.0.1.0.1.1.1.0.2.3.1.6.1.3.1.3.1.0.1.9.1.g.5.2.1.4.1.g.3es.wyn.w.37d.6.65.2.4g1.e.5rk.f.h9.1wi.f1.15u.3t6.5.38f",
+    Lt: "cl.0.2.0.2.0.12.0.5ud.7.8.7.8.7.c.0.f.0.1b.0",
+    Lu: "1t.p.2t.m.1.6.x.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.2.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.2.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.1.1.0.1.0.3.1.1.0.1.1.1.2.2.3.1.1.1.2.3.1.1.1.1.0.1.0.1.1.1.0.2.0.1.1.1.2.1.0.1.1.3.0.7.0.2.0.2.0.2.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.2.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.2.0.2.0.1.2.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.7.1.1.1.2.0.1.3.1.0.1.0.1.0.1.0.81.0.1.0.3.0.8.0.6.0.1.2.1.0.1.1.1.g.1.8.z.0.2.2.3.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.5.0.2.0.1.1.2.1e.1c.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.9.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.1.1.0.1.0.1.0.1.0.1.0.1.0.2.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.2.11.289.11.1.0.5.0.k2.2d.1oz.0.6.16.2.2.8w.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.9.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.9.7.8.5.a.7.8.7.8.5.b.0.1.0.1.0.1.0.8.7.20.3.c.3.c.3.c.4.b.3.7a.0.4.0.3.2.2.2.2.0.3.4.6.0.1.0.1.0.1.3.2.3.a.1.5.0.1p.0.22k.1b.1c.0.1.2.2.0.1.0.1.0.1.3.1.0.2.0.8.2.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.8.0.1.0.4.0.nyl.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.j.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.3r.0.1.0.1.0.1.0.1.0.1.0.1.0.3.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.a.0.1.0.1.1.1.0.1.0.1.0.1.0.4.0.1.0.2.0.1.0.3.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.4.1.4.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.3.1.0.1.1.3.0.5.0.1.0.1.0.1.0.o.0.h7v.p.xx.13.3s.z.4c.a.1.e.1.6.1.1.1d6.1e.4d.l.27u.v.gw0.v.k2o.p.q.p.q.p.q.0.1.1.2.0.2.1.2.3.1.7.q.p.q.1.1.3.2.7.1.6.r.1.1.3.1.4.1.0.3.6.r.p.q.p.q.p.q.p.q.p.q.p.u.o.x.o.x.o.x.o.x.o.x.0.3ed.x",
+    Mc: "1s3.0.1j.0.2.2.8.3.1.1.1e.1.1m.2.6.1.2.1.a.0.17.0.1m.2.1u.0.1m.2.8.0.1.1.1h.1.1m.0.1.0.6.1.2.1.a.0.2u.1.1.1.3.2.1.2.a.0.15.2.1p.3.1p.1.1m.0.1.4.2.1.1.1.9.1.s.0.e.1.1m.2.5.2.1.2.a.0.16.1.23.2.6.7.i.1.96.1.1r.0.4r.1.4.0.6.0.2.1.p.1.a.2.2.6.l.1.2.5.2.0.a.2.1a0.0.u.0.3l.0.7.7.1.1.9m.3.2.2.4.1.1.5.68.1.1m.0.1.0.9.0.1.1.8.5.41.0.1c.0.5.0.1.4.1.1.1p.0.u.0.4.1.2.0.1o.0.2.2.1.0.3.1.1c.7.8.1.4r.0.l.0.3sm.1.noz.1.2.0.2g.1.1e.f.3y.1.1b.0.1c.1.4.1.2.2.32.1.2.1.o.0.19.0.1.0.31.0.2.1.5.0.6l.1.1.1.1.1.1.0.jrn.0.1.0.3j.0.19.2.4.1.37.0.o.1.1n.0.1c.2.9.1.d.0.2l.2.3.1.1.0.4q.2.v.1.1m.1.1.3.2.1.2.2.9.0.a.1.2c.2.7.0.2.0.1.3.1.1.1.0.2t.2.8.1.3.0.2y.2.6.0.1.3.2.0.6l.2.6.3.2.0.35.2.8.1.1.0.31.0.1.1.6.0.2v.0.1.1.4.0.79.2.9.0.6v.5.1.1.4.0.2.0.1.0.3y.2.8.3.4.0.2c.0.t.1.1q.0.bb.0.e.0.2y.0.7.0.2.0.5x.4.4.1.1.0.9q.1.c.0.1c.1.8.1.1.0.d0o.2.2sk.1i.2w.1.j8z.1.6.5",
+    Me: "w8.1.4dw.0.17i.3.1.2.qdn.2",
+    Mn: "lc.33.7n.4.7d.18.1.0.1.1.1.1.1.0.20.a.1c.k.g.0.2t.6.2.5.2.1.1.3.z.0.u.q.2j.a.1m.8.9.0.o.3.1.8.1.2.1.4.17.2.1n.8.16.n.1.v.1j.0.1.0.4.7.4.0.3.6.a.1.t.0.1m.0.4.3.8.0.k.1.q.0.2.1.1l.0.4.1.4.1.2.2.3.0.u.1.3.0.b.1.1l.0.4.4.1.1.4.0.k.1.m.5.1.0.1m.0.2.0.1.3.8.0.7.1.b.1.u.0.1p.0.c.0.1e.0.3.0.1j.0.1.2.5.2.1.3.7.1.b.1.t.0.1m.0.2.0.6.0.5.1.k.1.s.1.1l.1.4.3.8.0.k.1.t.0.20.0.7.2.1.0.2i.0.2.6.c.7.2q.0.2.8.b.6.21.1.r.0.1.0.1.0.1j.d.1.4.1.1.5.a.1.z.9.0.2u.3.1.5.1.1.2.1.p.1.4.2.g.3.d.0.2.1.6.0.f.0.jj.2.qa.2.t.1.u.1.u.1.1s.1.1.6.8.0.2.a.9.0.19.2.1.0.39.1.y.0.3a.2.4.1.9.0.6.2.63.1.2.0.1m.0.1.6.1.0.1.0.2.7.6.9.2.0.1c.d.1.f.1d.3.1c.0.1.4.1.0.5.0.14.8.c.1.w.3.2.1.1.2.1k.0.1.1.3.0.1.2.1m.7.2.1.48.2.1.c.1.6.4.0.6.0.3.1.5i.1r.k0.c.4.0.3.b.2da.2.3x.0.2o.v.fe.3.2z.1.n9w.0.4.9.w.1.28.1.7k.0.3.0.4.0.p.1.5.0.47.1.q.h.d.0.12.7.p.a.1a.2.1c.0.2.3.2.1.13.0.1v.5.2.1.2.1.c.0.8.0.1b.0.1f.0.1.2.2.1.5.1.1.0.16.1.8.0.6m.0.2.0.4.0.fn4.0.kh.f.g.f.r1.0.6a.0.45.4.1ae.2.1.1.5.3.14.2.4.0.4l.1.fx.3.1t.4.8t.1.27.3.1y.a.1d.3.3f.0.1i.e.15.0.2.1.a.2.1d.3.2.1.7.0.1p.2.10.4.1.7.1q.0.c.1.1g.8.a.3.2.0.2n.2.2.0.1.1.6.0.2.0.4d.0.3.7.l.1.1l.1.3.0.11.6.3.4.1y.5.d.0.1.0.1.0.e.1.2d.7.2.2.1.0.n.0.2c.5.1.0.4.1.1.1.6m.3.6.1.1.1.r.1.2d.7.2.0.1.1.2y.0.1.0.2.5.1.0.2t.0.1.0.2.3.1.4.77.8.1.1.74.1.1.0.4.0.40.3.2.1.4.0.w.9.14.5.2.3.8.0.9.5.2.2.1a.c.1.1.ba.6.1.5.1.0.2a.l.2.6.1.1.1.1.3e.5.3.0.1.1.1.6.1.0.20.1.3.0.1.0.9n.1.b.1.1g.4.5.0.1.0.n.0.44l.0.6.e.8ug.b.3.2.1xc.4.1n.6.t4.0.1r.3.29.0.f5k.1.3mp.19.2.m.f4.2.h.7.2.6.u.3.44.2.1iz.1i.4.1d.8.0.e.0.m.4.1.e.11s.6.1.g.2.6.1.1.1.4.2s.0.4g.6.af.0.1p.3.e4.3.72.1.kg.6.31.6.gzhx.6n",
+    Nd: "1c.9.17q.9.3q.9.5i.9.bg.9.3a.9.3a.9.3a.9.3a.9.3a.9.3a.9.3a.9.3a.9.3a.9.2o.9.3a.9.1y.9.7q.9.1y.9.1fq.9.12.9.8c.9.3k.9.4m.9.6.9.52.9.2e.9.3q.9.6.9.r7q.9.iu.9.12.9.5i.9.m.9.2e.9.ba.9.geu.9.13a.9.1om.9.6.9.m4.9.3k.9.1o.9.40.9.7q.9.9i.9.3a.9.ae.9.2u.9.6.j.24.9.bq.9.2u.9.ie.9.2e.9.6u.9.1y.9.bq.9.d06.9.1t2.9.2e.9.3q.9.eu.9.iuu.9.250.1d.1ts.9.bq.9.dy.9.6v.9.np.9.3o6.9",
+    Nl: "4j2.2.227.y.2.3.2v2.0.p.8.e.2.nfv.9.hu8.1g.cs.0.8.0.3q.4.6cq.32",
+    No: "4y.1.5.0.2.2.1th.5.ag.5.3c.2.3p.6.61.6.h.8.c1.9.tx.j.vn.9.dc.0.1at.0.3.5.6.9.5i.f.15.0.k6.1n.26.l.hi.t.12h.0.wk.3.3u.9.u.7.1.e.w.9.13.e.n74.5.hjl.18.1t.3.h.1.9h.q.10.3.110.7.p.6.13.8.23.4.m.5.4g.1.2.f.2.19.1s.8.1g.1.u.2.23.4.2w.7.o.7.15.6.96.5.9s.u.4e.9.16.3.34.6.3q.j.aj.j.11h.1.by.8.o7.i.nn.k.ex2.6.m6.m.js9.j.c.j.30.o.47i.8.pt.1m.1.2.1.3.24.18.1.e.qq.c",
+    Pc: "2n.0.6an.1.j.0.17tq.1.o.2.6n.0",
+    Pd: "19.0.124.0.1f.0.2td.0.sl.0.1l5.5.2rl.0.2.0.v.1.4.0.s.0.ce.0.j.0.33.0.14ls.1.11.0.a.0.4p.0.2u8.0.8u.0",
+    Pe: "15.0.1f.0.v.0.2wt.0.1.0.1ge.0.1wp.0.1j.0.f.0.hm.0.1.0.u.0.u6.0.1.0.1.0.1.0.1.0.1.0.1.0.28.0.w.0.1.0.1.0.1.0.1.0.b8.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1s.0.1.0.x.0.th.0.1.0.1.0.1.0.18.0.1.0.1.0.1.0.bw.0.1.0.1.0.1.0.1.0.3.0.1.0.1.0.1.0.2.1.14im.0.61.0.t.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.3.0.h.0.1.0.1.0.4q.0.1f.0.v.0.2.0.2.0",
+    Pf: "57.0.671.0.3.0.s.0.2q0.0.1.0.4.0.2.0.f.0.3.0",
+    Pi: "4r.0.67g.0.2.1.2.0.p.0.2q0.0.1.0.4.0.2.0.f.0.3.0",
+    Po: "x.2.1.2.2.0.1.0.1.1.a.1.3.1.r.0.1w.0.5.0.e.1.7.0.ji.0.8.0.cy.5.15.0.1i.0.2.0.2.0.18.1.k.1.1.1.d.0.1.2.22.3.2u.0.17.d.6h.2.1i.e.v.0.79.1.a.0.3w.0.3c.0.3d.0.au.0.c.0.a7.0.2i.0.a.1.4o.e.1.0.34.0.22.4.4.1.33.5.4r.0.h0.8.lh.0.3g.2.1z.1.4d.2.1.2.11.5.1.3.8p.1.60.1.3k.6.1.5.4g.1.a.6.s.2.3g.3.1n.4.1q.1.1s.7.b.0.n6.1.8.7.8.8.2.3.2.2.3.a.1.0.1.9.2hm.3.1.1.34.0.3z.1.4.2.2.0.2.8.1.1.1.0.2.1.a.4.1.9.2.3.1.0.1.c.2.2.bw.2.1l.0.59.0.mwy.1.7h.2.2r.0.a.0.37.5.ak.3.2e.1.14.2.1.0.1d.1.1b.0.2p.c.g.1.3g.3.3i.1.g.1.6x.0.g84.6.2.0.m.0.k.1.2.3.3.2.1.3.7.2.6.0.1.1.45.2.1.2.2.0.1.0.1.1.a.1.3.1.r.0.10.0.2.1.be.2.ik.0.1c.0.bi.0.kn.0.5j.0.v.0.7k.8.12.0.34.6.1u.6.2h.3.qg.4.18.3.59.6.31.1.1.3.3i.3.1c.1.27.3.4.0.d.0.1.2.2g.5.2z.0.8a.1.1.1.36.4.a.1.1.0.2w.0.6y.m.2x.2.s.c.24.0.3m.2.70.0.7c.2.4b.0.2k.7.2b.2.1.4.2l.9.5z.0.2n.4.16.1.hx.1.22.c.4v.0.vk.4.29o.1.bjv.1.3p.0.1t.4.8.0.fc.2.87.3.93.0.f5o.0.5wn.4.29f.0.ny.1",
+    Ps: "14.0.1e.0.v.0.2wu.0.1.0.1ge.0.1vi.0.3.0.12.0.1j.0.f.0.hm.0.1.0.u.0.u6.0.1.0.1.0.1.0.1.0.1.0.1.0.28.0.w.0.1.0.1.0.1.0.1.0.b8.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.1s.0.1.0.x.0.th.0.1.0.1.0.1.0.p.0.i.0.1.0.1.0.1.0.bw.0.1.0.1.0.1.0.1.0.3.0.1.0.1.0.1.0.2.0.14ip.0.5z.0.t.0.1.0.1.0.1.0.1.0.1.0.1.0.1.0.3.0.h.0.1.0.1.0.4q.0.1e.0.v.0.3.0.2.0",
+    Sc: "10.0.3h.3.yx.0.3f.0.du.1.du.1.7.0.6t.0.7b.0.g5.0.1wb.0.1qc.w.qrb.0.gxv.0.30.0.4a.0.63.1.3.1.6ba.3.12ji.0.1ww.0",
+    Sk: "2m.0.1.0.1z.0.6.0.4.0.3.0.eh.3.c.d.5.6.1.0.1.g.39.0.e.1.zm.0.4l0.0.1.2.b.2.d.2.d.2.d.1.3a4.1.ndv.m.9.1.2v.1.r4.0.e.1.fuu.g.or.0.1.0.4i.0.1c7r.4",
+    Sm: "17.0.g.2.1p.0.1.0.19.0.4.0.11.0.v.0.la.0.en.2.56j.0.d.0.13.2.d.2.3v.0.13.4.6.0.1w.4.5.1.4.0.2.0.2.0.7.0.v.1.2.0.1.0.v.7f.w.1.2i.0.u.o.14.5.d1.0.9.0.1i.7.33.0.9c.4.2.u.a.f.74.3m.m.1q.4.v.2.75.1c.k.2.5.1524.0.mw.0.1.2.4k.0.g.2.1p.0.1.0.3n.0.6.3.2ox.1.13qp.0.p.0.v.0.p.0.v.0.p.0.v.0.p.0.v.0.p.0.4ks.1",
+    So: "4m.0.2.0.4.0.1.0.r5.0.7e.1.3j.1.5q.0.a.0.j.1.6v.0.eb.0.ad.0.3m.5.1.0.3o.0.5r.0.15.0.av.2.f.0.1.2.2.5.k.0.1.0.1.0.3p.7.1.5.1.1.5.3.5h.1.kw.9.k3.0.k2.0.4d.x.9t.9.9.8.137.1.1.3.1.1.a.0.1.1.6.5.1.0.1.0.1.0.4.0.b.1.e.0.1.1.1.0.1m.1.9.4.2.3.1.1.1.1.1.6.1.u.2.1.1.0.1.u.7g.7.4.j.2.6.2.28.1.t.p.13.6.1z.m.a.29.25.m.52.1.8.1.1h.8.32.1.6v.18.17.1s.73.e8.1b.l.1.6.12.2.v.1.2w.6d.5.9x.1.1a.p.1.2g.c.5x.q.f.4.0.d.1.c.0.l.1.6.1.9c.1.4.9.w.11.9.0.g.u.b.t.8.0.f.v.a.12.f.8v.534.1r.h3k.1i.o1.3.a.1.1.0.fx.2.gcm.f.3j.0.19.2.dg.0.3.0.4.1.d.1.8p.8.1l.g.2.2.1.c.3.0.1b.18.1a2.1.gf.0.2gm.0.1p1.7.4.g.eve.3.5.0.g2e.0.31f.6n.g.c3.4c.37.1o.6t.a.12.2.1n.5.2.m.1.7.t.4.1o.l.1t.3.0.56.2e.x5.e7.1j.3.1e.7.1.d.1.1.1c8.0.28s.0.3l.0.k1.17.4.2r.c.e.2.e.1.e.1.10.n.4g.1k.s.d.17.4.8.7.1.e.5.4a.6y.5.k7.4.g.3.c.3.3a.4.2m.6.b.4.0.f.b.4.1j.8.9.6.13.8.t.2.b.4.1.1q.9f.c.d.2.c.3.9.5.1j.7.e.2.a.6.8.7.42.1.2j",
+    Zl: "6co.0",
+    Zp: "6cp.0",
+    Zs: "w.0.3j.0.4bj.0.1vj.a.10.0.1b.0.334.0",
+    Cc: "0.v.2n.w",
+    Cf: "4t.0.11u.5.m.0.5c.0.1d.0.ao.1.28.0.2zv.0.1ks.4.q.4.1d.4.1.9.17yn.0.6x.2.3b5.0.f.0.6zm.f.qxs.3.43z.7.h406.0.u.2n",
+    Cn: "oo.1.6.3.7.0.1.0.k.0.b1.0.12.1.1e.1.3.0.1j.7.r.3.6.a.7i.0.1o.1.2t.d.1n.1.1d.1.f.0.s.1.1.0.b.4.v.0.2.4.6l.0.8.1.2.1.m.0.7.0.1.2.4.1.9.1.2.1.4.7.1.3.2.0.5.1.p.1.3.0.6.3.2.1.m.0.7.0.2.0.2.0.2.1.1.0.5.3.2.1.3.2.1.6.4.0.1.6.h.9.3.0.9.0.3.0.m.0.7.0.2.0.5.1.a.0.3.0.3.1.1.e.4.1.c.6.7.0.3.0.8.1.2.1.m.0.7.0.2.0.5.1.9.1.2.1.3.6.3.3.2.0.5.1.i.9.2.0.6.2.3.0.4.2.2.0.1.0.2.2.2.2.3.2.c.3.5.2.3.0.4.1.1.5.1.d.l.4.d.0.3.0.n.0.g.1.9.0.3.0.4.6.2.0.3.1.1.1.4.1.a.6.m.0.3.0.n.0.a.0.5.1.9.0.3.0.4.6.2.5.2.0.4.1.a.0.3.b.d.0.3.0.1f.0.3.0.6.3.g.1.q.0.3.0.i.2.o.0.9.0.1.1.7.2.1.3.6.0.1.0.8.5.a.1.3.b.1m.3.t.10.2.0.1.0.5.0.o.0.1.0.n.1.5.0.1.0.7.0.a.1.4.v.20.0.10.3.13.0.10.0.f.0.d.10.5i.0.1.4.1.1.ah.0.4.1.7.0.1.0.4.1.15.0.4.1.x.0.4.1.7.0.1.0.4.1.f.0.1l.0.4.1.1v.1.w.2.q.5.2e.1.6.1.il.2.2h.6.m.8.o.8.k.b.d.0.3.0.2.b.2m.1.a.5.a.5.q.5.2h.6.17.4.1y.9.v.0.c.3.c.3.1.2.16.1.5.a.18.3.q.5.b.2.1q.1.1t.0.t.1.b.5.a.5.e.1.v.1c.25.0.4m.7.1o.2.f.2.1q.4.17.1.b.7.17.4.eu.1.6.1.12.1.6.1.8.0.1.0.1.0.1.0.v.1.1h.0.f.0.e.1.6.0.j.1.3.0.9.0.2t.0.c.1.r.0.d.2.x.e.x.e.3w.3.ii.l.b.k.1ec.1.w.0.9p.4.19.0.1.4.1.1.1k.6.2.d.o.8.7.0.7.0.7.0.7.0.7.0.7.0.7.0.7.0.3i.x.q.0.2h.b.5y.p.28.0.2e.1.2v.4.17.0.2m.0.2e.8.1c.0.mlp.2.1j.8.9o.j.54.7.5q.1.2.0.1.0.8.k.1n.2.a.5.1k.7.1y.7.c.5.38.a.u.2.26.0.b.3.x.0.1j.8.e.1.a.1.2v.n.s.9.6.1.6.1.6.8.7.0.7.0.1o.3.3i.1.a.5.8mc.b.n.3.1d.3.6su.1.2y.11.7.b.5.4.q.0.5.0.1.0.2.0.2.0.3h.f.cd.1.1i.6.1.v.16.5.1f.0.j.0.4.3.5.0.3r.1.1.0.5a.2.6.1.6.1.6.1.3.2.7.0.7.9.5.1.c.0.q.0.j.0.2.0.f.1.e.x.3f.4.3.3.19.2.2g.0.d.2.1.1a.1a.3l.t.2.1d.e.s.3.10.8.u.4.17.4.u.0.11.3.e.15.4e.1.a.5.10.3.10.3.14.7.1g.a.c.0.f.0.7.0.2.0.b.0.f.0.7.0.2.2.1g.b.8n.8.m.9.8.n.6.0.16.0.9.1w.6.1.1.0.18.0.2.2.1.1.n.0.20.7.9.1b.j.0.2.4.x.2.r.4.1.1r.1k.3.k.1.1e.0.2.4.8.0.3.0.t.1.3.3.a.6.9.6.1s.v.13.3.c.8.1i.2.t.1.r.4.q.6.4.b.7.27.21.1i.1f.c.1f.6.1a.7.a.5.12.2.t.7.2.5r.v.0.16.0.3.1.2.f.3.1i.18.7.16.l.q.11.s.j.n.8.26.3.10.8.1w.9.1.1.p.6.a.5.1h.0.i.7.13.8.2o.0.k.a.i.0.1b.1p.7.0.1.0.4.0.f.0.b.5.1n.4.a.5.4.0.8.1.2.1.m.0.7.0.2.0.5.0.a.1.2.1.3.1.1.5.1.4.7.1.7.2.5.a.a.0.1.1.1.0.12.0.a.0.1.1.1.0.4.0.a.0.2.7.2.s.2k.0.5.t.20.7.a.4l.1i.1.12.x.1x.a.a.5.d.i.1m.5.a.5.k.r.r.1.f.3.n.54.1o.2r.2b.b.8.1.1.1.8.0.2.0.u.0.2.1.c.8.a.1x.8.1.1a.1.b.q.20.7.2b.c.21.6.a.51.y.d.a.5.9.0.19.0.e.9.t.2.w.1.m.0.e.20.7.0.2.0.18.2.1.0.2.0.9.7.a.5.6.0.2.0.11.0.2.0.6.6.a.8l.p.6.h.0.15.2.t.2c.1.e.1e.c.pn.2t.33.0.5.a.5g.217.2r.c.uu.9.32z.4.g7.5a0.1m.1c5.ft.6.v.0.a.3.29.0.a.5.u.1.6.9.1y.9.a.0.7.0.l.4.j.bz.1m.5h.2j.2s.23.3.1l.6.h.1r.5.a.2.d.4qg.7.ye.14.a.6w6.4.0.7.0.2.0.83.e.1.s.3.1.1.d.4.7.b0.1s3.2z.4.d.2.9.6.a.1.8.317.6y.5.c4.23.1a.1.n.8.38.1n.6u.9.13.1.5e.k.1y.3d.k.b.k.b.2f.8.p.3q.2d.0.1z.0.2.1.1.1.2.1.4.0.c.0.1.0.7.0.1t.0.4.1.8.0.7.0.s.0.4.0.5.0.1.2.7.0.9g.1.84.1.ji.e.5.0.f.un.v.5.6.5w.7.0.h.1.7.0.2.0.5.4.1q.w.1.33.19.2.e.1.a.3.2.8v.v.g.1m.4.1.cv.16.5x.17.3.1.db.7.0.4.0.2.0.f.0.5h.1.g.14.24.3.a.3.2.ls.1w.23.1p.5d.4.0.r.0.2.0.1.1.1.0.a.0.4.0.1.0.1.5.1.3.1.0.1.0.1.0.3.0.2.0.1.1.1.0.1.0.1.0.1.0.1.0.2.0.1.1.4.0.7.0.4.0.4.0.1.0.a.0.h.4.3.0.5.0.h.1f.2.7h.18.3.2s.b.f.1.f.0.f.0.11.9.4u.1j.t.c.18.3.9.6.2.d.6.49.rc.3.h.2.d.2.3b.3.2n.5.c.3.1.e.c.3.1k.7.a.5.14.7.u.1.c.3.2.1p.9g.b.e.1.d.2.a.4.1k.6.f.1.b.5.9.6.43.0.2u.sl.wyo.v.37e.5.66.1.4g2.d.5rl.e.ha.1wh.f2.15t.3t7.4.38g.f974.1.t.2o.3j.6o.1e6n.1eke.1.1eke.1",
+    Co: "188w.4xr.jpc0.1ekd.2.1ekd"
+};
+
+/** Lazily decoded Unicode category ranges. */
+var RFC_UNICODE_CATEGORY_RANGES = {};
+
+/** Leaf categories belonging to each RFC 9485 aggregate category. */
+var RFC_UNICODE_CATEGORY_GROUPS = {
+    L: ["Ll", "Lm", "Lo", "Lt", "Lu"],
+    M: ["Mc", "Me", "Mn"],
+    N: ["Nd", "Nl", "No"],
+    P: ["Pc", "Pd", "Pe", "Pf", "Pi", "Po", "Ps"],
+    S: ["Sc", "Sk", "Sm", "So"],
+    Z: ["Zl", "Zp", "Zs"],
+    C: ["Cc", "Cf", "Cn", "Co"]
+};
+
 /**
- * Adapts an I-Regexp pattern for the ES5 regular-expression engine.
+ * Decodes one category's start/end ranges on first use.
  *
- * In particular, an unescaped dot is expanded to one Unicode scalar so a
- * surrogate pair is not treated as two independent characters.
+ * Each pair stores the gap after the previous range and the inclusive range
+ * length. The compact source representation keeps the Action self-contained.
  *
- * @param {string} pattern RFC regular-expression pattern.
- * @returns {string} JavaScript-compatible pattern source.
+ * @param {string} category Two-letter Unicode general category.
+ * @returns {Array<number>} Alternating inclusive start/end code points.
  */
-function rfcPrepareRegex(pattern) {
-    var out = "";
-    var inClass = false;
-    var scalarDot = "(?:[\\uD800-\\uDBFF][\\uDC00-\\uDFFF]|[^\\uD800-\\uDFFF\\r\\n])";
-    for (var i = 0; i < pattern.length; i++) {
-        var ch = pattern.charAt(i);
-        if (ch === "\\") {
-            out += ch;
-            if (i + 1 < pattern.length) out += pattern.charAt(++i);
-        }
-        else if (ch === "[") {
-            inClass = true;
-            out += ch;
-        }
-        else if (ch === "]" && inClass) {
-            inClass = false;
-            out += ch;
-        }
-        else if (ch === "." && !inClass) {
-            out += scalarDot;
-        }
-        else {
-            out += ch;
-        }
+function rfcUnicodeCategoryRanges(category) {
+    if (RFC_UNICODE_CATEGORY_RANGES[category]) {
+        return RFC_UNICODE_CATEGORY_RANGES[category];
     }
-    return out;
+    var encoded = RFC_UNICODE_CATEGORY_DATA[category];
+    if (typeof encoded !== "string") return [];
+    var values = encoded ? encoded.split(".") : [];
+    var ranges = [];
+    var previousEnd = -1;
+    for (var i = 0; i < values.length; i += 2) {
+        var start = previousEnd + 1 + parseInt(values[i], 36);
+        var end = start + parseInt(values[i + 1], 36);
+        ranges[ranges.length] = start;
+        ranges[ranges.length] = end;
+        previousEnd = end;
+    }
+    RFC_UNICODE_CATEGORY_RANGES[category] = ranges;
+    return ranges;
 }
 
 /**
- * Compiles an RFC regex for whole-string `match()` or substring `search()`.
+ * Tests one scalar against a leaf Unicode category by binary search.
  *
- * @param {string} pattern Pattern source.
- * @param {boolean} full Whether to anchor the complete string.
- * @returns {RegExp|null} Compiled expression, or `null` when invalid.
+ * @param {number} codePoint Unicode scalar value.
+ * @param {string} category Two-letter Unicode general category.
+ * @returns {boolean} Whether the scalar belongs to the category.
  */
-function rfcRegex(pattern, full) {
+function rfcUnicodeLeafCategoryContains(codePoint, category) {
+    var ranges = rfcUnicodeCategoryRanges(category);
+    var low = 0;
+    var high = ranges.length / 2 - 1;
+    while (low <= high) {
+        var middle = Math.floor((low + high) / 2);
+        var start = ranges[middle * 2];
+        var end = ranges[middle * 2 + 1];
+        if (codePoint < start) high = middle - 1;
+        else if (codePoint > end) low = middle + 1;
+        else return true;
+    }
+    return false;
+}
+
+/**
+ * Tests one scalar against an RFC 9485 Unicode category.
+ *
+ * @param {number} codePoint Unicode scalar value.
+ * @param {string} category One- or two-letter general category.
+ * @returns {boolean} Whether the scalar belongs to the category.
+ */
+function rfcUnicodeCategoryContains(codePoint, category) {
+    var leaves = RFC_UNICODE_CATEGORY_GROUPS[category];
+    if (!leaves) return rfcUnicodeLeafCategoryContains(codePoint, category);
+    for (var i = 0; i < leaves.length; i++) {
+        if (rfcUnicodeLeafCategoryContains(codePoint, leaves[i])) return true;
+    }
+    return false;
+}
+
+/**
+ * Creates a parser for the RFC 9485 I-Regexp subset.
+ *
+ * `^` and `$` retain the established anchor behavior used by the pinned
+ * JSONPath compliance suite. Escaping either character matches it literally.
+ *
+ * @constructor
+ * @param {string} source I-Regexp source.
+ */
+function IRegexpParser(source) {
+    this.source = source;
+    this.index = 0;
+    this.depth = 0;
+}
+
+/** Throws a private parse error caught by the function evaluator. */
+IRegexpParser.prototype.fail = function () {
+    throw new Error("Invalid I-Regexp");
+};
+
+/** Reads one Unicode scalar and rejects isolated surrogate code units. */
+IRegexpParser.prototype.readScalar = function () {
+    if (this.index >= this.source.length) this.fail();
+    var first = this.source.charCodeAt(this.index++);
+    if (first >= 0xD800 && first <= 0xDBFF) {
+        if (this.index >= this.source.length) this.fail();
+        var second = this.source.charCodeAt(this.index++);
+        if (second < 0xDC00 || second > 0xDFFF) this.fail();
+        return (first - 0xD800) * 0x400 + second - 0xDC00 + 0x10000;
+    }
+    if (first >= 0xDC00 && first <= 0xDFFF) this.fail();
+    return first;
+};
+
+/** Parses a complete I-Regexp. */
+IRegexpParser.prototype.parse = function () {
+    var expression = this.parseAlternation(null);
+    if (this.index !== this.source.length) this.fail();
+    return expression;
+};
+
+/** Parses alternation until the supplied group terminator. */
+IRegexpParser.prototype.parseAlternation = function (terminator) {
+    var branches = [this.parseBranch(terminator)];
+    while (this.source.charAt(this.index) === "|") {
+        this.index++;
+        branches[branches.length] = this.parseBranch(terminator);
+    }
+    return { type: "alternation", branches: branches };
+};
+
+/** Parses one concatenated branch. */
+IRegexpParser.prototype.parseBranch = function (terminator) {
+    var pieces = [];
+    while (this.index < this.source.length) {
+        var ch = this.source.charAt(this.index);
+        if (ch === "|" || (terminator && ch === terminator)) break;
+        pieces[pieces.length] = this.parsePiece();
+    }
+    return { type: "sequence", pieces: pieces };
+};
+
+/** Parses one atom and its optional quantifier. */
+IRegexpParser.prototype.parsePiece = function () {
+    var atom = this.parseAtom();
+    var min = 1;
+    var max = 1;
+    var ch = this.source.charAt(this.index);
+    if (
+        (atom.type === "anchorStart" || atom.type === "anchorEnd") &&
+        (ch === "*" || ch === "+" || ch === "?" || ch === "{")
+    ) {
+        this.fail();
+    }
+    if (ch === "*" || ch === "+" || ch === "?") {
+        this.index++;
+        min = ch === "+" ? 1 : 0;
+        max = ch === "?" ? 1 : null;
+    }
+    else if (ch === "{") {
+        this.index++;
+        min = this.parseQuantifierInteger();
+        max = min;
+        if (this.source.charAt(this.index) === ",") {
+            this.index++;
+            max = /[0-9]/.test(this.source.charAt(this.index))
+                ? this.parseQuantifierInteger()
+                : null;
+        }
+        if (this.source.charAt(this.index) !== "}") this.fail();
+        this.index++;
+        if (max !== null && max < min) this.fail();
+    }
+    return { type: "repeat", atom: atom, min: min, max: max };
+};
+
+/** Parses a bounded decimal quantifier without allowing numeric overflow. */
+IRegexpParser.prototype.parseQuantifierInteger = function () {
+    if (!/[0-9]/.test(this.source.charAt(this.index))) this.fail();
+    var value = 0;
+    while (/[0-9]/.test(this.source.charAt(this.index))) {
+        value = value * 10 + parseInt(this.source.charAt(this.index++), 10);
+        if (value > RFC_IREGEXP_MAX_STATES) value = RFC_IREGEXP_MAX_STATES + 1;
+    }
+    return value;
+};
+
+/** Parses a literal, group, character class, category, dot, or anchor. */
+IRegexpParser.prototype.parseAtom = function () {
+    var ch = this.source.charAt(this.index);
+    if (ch === "(") {
+        this.index++;
+        this.depth++;
+        if (this.depth > 64) this.fail();
+        var expression = this.parseAlternation(")");
+        if (this.source.charAt(this.index) !== ")") this.fail();
+        this.index++;
+        this.depth--;
+        return { type: "group", expression: expression };
+    }
+    if (ch === ".") {
+        this.index++;
+        return { type: "dot" };
+    }
+    if (ch === "[") return this.parseClass();
+    if (ch === "\\") {
+        var escaped = this.parseEscape();
+        return escaped.type === "category"
+            ? { type: "class", negated: false, terms: [escaped] }
+            : { type: "literal", value: escaped.value };
+    }
+    if (ch === "^") {
+        this.index++;
+        return { type: "anchorStart" };
+    }
+    if (ch === "$") {
+        this.index++;
+        return { type: "anchorEnd" };
+    }
+    if (!ch || "()*+?[]{}|".indexOf(ch) !== -1) this.fail();
+    return { type: "literal", value: this.readScalar() };
+};
+
+/** Parses an RFC 9485 single-character or Unicode-category escape. */
+IRegexpParser.prototype.parseEscape = function () {
+    this.index++;
+    var ch = this.source.charAt(this.index++);
+    if (ch === "p" || ch === "P") {
+        if (this.source.charAt(this.index++) !== "{") this.fail();
+        var start = this.index;
+        while (this.index < this.source.length && this.source.charAt(this.index) !== "}") {
+            this.index++;
+        }
+        if (this.source.charAt(this.index) !== "}") this.fail();
+        var category = this.source.substring(start, this.index++);
+        if (!rfcIRegexpCategoryValid(category)) this.fail();
+        return { type: "category", category: category, complement: ch === "P" };
+    }
+    if (ch === "n") return { type: "literal", value: 10 };
+    if (ch === "r") return { type: "literal", value: 13 };
+    if (ch === "t") return { type: "literal", value: 9 };
+    if ("$()*+-.?\\[]^{|}".indexOf(ch) === -1) this.fail();
+    return { type: "literal", value: ch.charCodeAt(0) };
+};
+
+/** Validates the exact category names admitted by RFC 9485. */
+function rfcIRegexpCategoryValid(category) {
+    if (RFC_UNICODE_CATEGORY_GROUPS[category]) return true;
+    return typeof RFC_UNICODE_CATEGORY_DATA[category] === "string";
+}
+
+/** Parses one character-class expression. */
+IRegexpParser.prototype.parseClass = function () {
+    this.index++;
+    var negated = false;
+    if (this.source.charAt(this.index) === "^") {
+        negated = true;
+        this.index++;
+    }
+    var terms = [];
+    if (this.source.charAt(this.index) === "-") {
+        this.index++;
+        terms[terms.length] = { type: "range", start: 45, end: 45 };
+    }
+    while (this.index < this.source.length && this.source.charAt(this.index) !== "]") {
+        if (
+            this.source.charAt(this.index) === "-" &&
+            this.source.charAt(this.index + 1) === "]"
+        ) {
+            this.index++;
+            terms[terms.length] = { type: "range", start: 45, end: 45 };
+            break;
+        }
+        var first = this.parseClassToken();
+        if (
+            first.type === "literal" &&
+            this.source.charAt(this.index) === "-" &&
+            this.source.charAt(this.index + 1) !== "]"
+        ) {
+            this.index++;
+            var last = this.parseClassToken();
+            if (last.type !== "literal" || last.value < first.value) this.fail();
+            terms[terms.length] = {
+                type: "range",
+                start: first.value,
+                end: last.value
+            };
+        }
+        else if (first.type === "literal") {
+            terms[terms.length] = {
+                type: "range",
+                start: first.value,
+                end: first.value
+            };
+        }
+        else {
+            terms[terms.length] = first;
+        }
+    }
+    if (this.source.charAt(this.index) !== "]" || terms.length === 0) this.fail();
+    this.index++;
+    return { type: "class", negated: negated, terms: terms };
+};
+
+/** Parses one character-class token. */
+IRegexpParser.prototype.parseClassToken = function () {
+    var ch = this.source.charAt(this.index);
+    if (ch === "\\") return this.parseEscape();
+    if (!ch || ch === "-" || ch === "[" || ch === "]") this.fail();
+    return { type: "literal", value: this.readScalar() };
+};
+
+/** Creates one bounded NFA state. */
+function rfcIRegexpState(compiler, type, atom) {
+    if (compiler.states >= RFC_IREGEXP_MAX_STATES) {
+        throw new Error("I-Regexp state limit exceeded");
+    }
+    return {
+        id: compiler.states++,
+        type: type,
+        atom: atom || null,
+        out: null,
+        out1: null
+    };
+}
+
+/** Patches every open fragment edge to the supplied state. */
+function rfcIRegexpPatch(edges, state) {
+    for (var i = 0; i < edges.length; i++) edges[i].state[edges[i].edge] = state;
+}
+
+/** Concatenates two compiled NFA fragments. */
+function rfcIRegexpConcat(left, right) {
+    if (!left) return right;
+    rfcIRegexpPatch(left.outs, right.start);
+    return { start: left.start, outs: right.outs };
+}
+
+/** Compiles an alternation AST to a Thompson NFA fragment. */
+function rfcIRegexpCompileExpression(expression, compiler) {
+    var result = rfcIRegexpCompileSequence(expression.branches[0], compiler);
+    for (var i = 1; i < expression.branches.length; i++) {
+        var branch = rfcIRegexpCompileSequence(expression.branches[i], compiler);
+        var split = rfcIRegexpState(compiler, "split");
+        split.out = result.start;
+        split.out1 = branch.start;
+        result = {
+            start: split,
+            outs: result.outs.concat(branch.outs)
+        };
+    }
+    return result;
+}
+
+/** Compiles a concatenated AST branch. */
+function rfcIRegexpCompileSequence(sequence, compiler) {
+    var result = null;
+    for (var i = 0; i < sequence.pieces.length; i++) {
+        result = rfcIRegexpConcat(
+            result,
+            rfcIRegexpCompileRepeat(sequence.pieces[i], compiler)
+        );
+    }
+    if (result) return result;
+    var epsilon = rfcIRegexpState(compiler, "epsilon");
+    return { start: epsilon, outs: [{ state: epsilon, edge: "out" }] };
+}
+
+/** Compiles one atom without a quantifier. */
+function rfcIRegexpCompileAtom(atom, compiler) {
+    if (atom.type === "group") {
+        return rfcIRegexpCompileExpression(atom.expression, compiler);
+    }
+    var type = atom.type === "anchorStart"
+        ? "anchorStart"
+        : atom.type === "anchorEnd"
+            ? "anchorEnd"
+            : "character";
+    var state = rfcIRegexpState(compiler, type, atom);
+    return { start: state, outs: [{ state: state, edge: "out" }] };
+}
+
+/** Compiles one quantified atom, rejecting excessive expansions safely. */
+function rfcIRegexpCompileRepeat(repeat, compiler) {
+    var result = null;
+    var i;
+    for (i = 0; i < repeat.min; i++) {
+        result = rfcIRegexpConcat(result, rfcIRegexpCompileAtom(repeat.atom, compiler));
+    }
+    if (repeat.max === null) {
+        var repeated = rfcIRegexpCompileAtom(repeat.atom, compiler);
+        var loop = rfcIRegexpState(compiler, "split");
+        loop.out = repeated.start;
+        rfcIRegexpPatch(repeated.outs, loop);
+        var star = { start: loop, outs: [{ state: loop, edge: "out1" }] };
+        return rfcIRegexpConcat(result, star);
+    }
+    for (i = repeat.min; i < repeat.max; i++) {
+        var optional = rfcIRegexpCompileAtom(repeat.atom, compiler);
+        var split = rfcIRegexpState(compiler, "split");
+        split.out = optional.start;
+        optional = {
+            start: split,
+            outs: optional.outs.concat([{ state: split, edge: "out1" }])
+        };
+        result = rfcIRegexpConcat(result, optional);
+    }
+    if (result) return result;
+    var epsilon = rfcIRegexpState(compiler, "epsilon");
+    return { start: epsilon, outs: [{ state: epsilon, edge: "out" }] };
+}
+
+/** Parses and compiles an I-Regexp, returning `null` when it is invalid. */
+function rfcIRegexpCompile(pattern) {
+    if (pattern.length > RFC_IREGEXP_MAX_PATTERN_LENGTH) return null;
     try {
-        pattern = rfcPrepareRegex(pattern);
-        return new RegExp(full ? "^(?:" + pattern + ")$" : pattern);
+        var parser = new IRegexpParser(pattern);
+        var compiler = { states: 0 };
+        var fragment = rfcIRegexpCompileExpression(parser.parse(), compiler);
+        var match = rfcIRegexpState(compiler, "match");
+        rfcIRegexpPatch(fragment.outs, match);
+        return { start: fragment.start, states: compiler.states };
     }
     catch (error) {
         return null;
     }
 }
 
-/**
- * Evaluates the RFC `match()` or `search()` string predicate.
- *
- * @param {*} value Candidate string.
- * @param {*} pattern Candidate I-Regexp string.
- * @param {boolean} full `true` for `match`, `false` for `search`.
- * @returns {boolean} Match result; type and pattern errors produce `false`.
- */
-function rfcRegexMatches(value, pattern, full) {
-    if (typeof value !== "string" || typeof pattern !== "string") return false;
-    var categoryResult = rfcUnicodeCategoryTest(value, pattern, full);
-    if (categoryResult !== null) return categoryResult;
-    var regex = rfcRegex(pattern, full);
-    return regex ? regex.test(value) : false;
-}
-
-/**
- * Splits a JavaScript string into Unicode scalar substrings.
- *
- * @param {string} value String to split.
- * @returns {Array<string>} Scalar substrings.
- */
-function rfcUnicodeScalars(value) {
+/** Converts a JavaScript string into Unicode scalar numbers. */
+function rfcIRegexpScalars(value) {
     var out = [];
     for (var i = 0; i < value.length; i++) {
-        var scalar = value.charAt(i);
-        var code = value.charCodeAt(i);
-        if (code >= 0xD800 && code <= 0xDBFF && i + 1 < value.length) {
-            scalar += value.charAt(++i);
+        var first = value.charCodeAt(i);
+        if (first >= 0xD800 && first <= 0xDBFF) {
+            if (i + 1 >= value.length) return null;
+            var second = value.charCodeAt(++i);
+            if (second < 0xDC00 || second > 0xDFFF) return null;
+            out[out.length] = (first - 0xD800) * 0x400 + second - 0xDC00 + 0x10000;
         }
-        out[out.length] = scalar;
+        else {
+            if (first >= 0xDC00 && first <= 0xDFFF) return null;
+            out[out.length] = first;
+        }
     }
     return out;
 }
 
-/**
- * Handles Unicode uppercase category patterns on ES5 engines without Unicode
- * property escapes.
- *
- * @param {string} value Candidate string.
- * @param {string} pattern Category pattern.
- * @param {boolean} full Whether the complete value must match.
- * @returns {boolean|null} Match result, or `null` when not handled here.
- */
-function rfcUnicodeCategoryTest(value, pattern, full) {
-    if (pattern !== "\\p{Lu}" && pattern !== "\\P{Lu}") return null;
-    var scalars = rfcUnicodeScalars(value);
-    if (full && scalars.length !== 1) return false;
-    for (var i = 0; i < scalars.length; i++) {
-        var scalar = scalars[i];
-        var uppercase = scalar.toUpperCase() === scalar && scalar.toLowerCase() !== scalar;
-        if ((pattern === "\\p{Lu}" && uppercase) || (pattern === "\\P{Lu}" && !uppercase)) return true;
+/** Tests one scalar against a compiled character predicate. */
+function rfcIRegexpCharacterMatches(atom, codePoint) {
+    if (atom.type === "literal") return atom.value === codePoint;
+    if (atom.type === "dot") return codePoint !== 10 && codePoint !== 13;
+    var matched = false;
+    for (var i = 0; i < atom.terms.length && !matched; i++) {
+        var term = atom.terms[i];
+        if (term.type === "range") {
+            matched = codePoint >= term.start && codePoint <= term.end;
+        }
+        else {
+            matched = rfcUnicodeCategoryContains(codePoint, term.category);
+            if (term.complement) matched = !matched;
+        }
+    }
+    return atom.negated ? !matched : matched;
+}
+
+/** Adds a state and follows all zero-width transitions. */
+function rfcIRegexpAddState(list, state, seen, position, length) {
+    if (!state || seen[state.id]) return;
+    seen[state.id] = true;
+    if (state.type === "split") {
+        rfcIRegexpAddState(list, state.out, seen, position, length);
+        rfcIRegexpAddState(list, state.out1, seen, position, length);
+    }
+    else if (state.type === "epsilon") {
+        rfcIRegexpAddState(list, state.out, seen, position, length);
+    }
+    else if (state.type === "anchorStart") {
+        if (position === 0) rfcIRegexpAddState(list, state.out, seen, position, length);
+    }
+    else if (state.type === "anchorEnd") {
+        if (position === length) rfcIRegexpAddState(list, state.out, seen, position, length);
+    }
+    else {
+        list[list.length] = state;
+    }
+}
+
+/** Returns whether a state list contains the accepting state. */
+function rfcIRegexpAccepts(states) {
+    for (var i = 0; i < states.length; i++) {
+        if (states[i].type === "match") return true;
     }
     return false;
+}
+
+/** Runs a compiled Thompson NFA over Unicode scalar input. */
+function rfcIRegexpRun(compiled, scalars, full) {
+    var current = [];
+    var seen = {};
+    if (full) rfcIRegexpAddState(current, compiled.start, seen, 0, scalars.length);
+    for (var position = 0; position <= scalars.length; position++) {
+        if (!full) {
+            seen = {};
+            for (var s = 0; s < current.length; s++) seen[current[s].id] = true;
+            rfcIRegexpAddState(current, compiled.start, seen, position, scalars.length);
+            if (rfcIRegexpAccepts(current)) return true;
+        }
+        if (position === scalars.length) break;
+        var next = [];
+        var nextSeen = {};
+        for (var i = 0; i < current.length; i++) {
+            var state = current[i];
+            if (
+                state.type === "character" &&
+                rfcIRegexpCharacterMatches(state.atom, scalars[position])
+            ) {
+                rfcIRegexpAddState(
+                    next,
+                    state.out,
+                    nextSeen,
+                    position + 1,
+                    scalars.length
+                );
+            }
+        }
+        current = next;
+    }
+    return rfcIRegexpAccepts(current);
+}
+
+/**
+ * Evaluates RFC 9535 `match()` or `search()` with an RFC 9485 parser.
+ *
+ * Invalid patterns and non-string arguments produce LogicalFalse as required
+ * by RFC 9535. The NFA works on Unicode scalars and does not use `eval` or the
+ * host regular-expression engine.
+ *
+ * @param {*} value Candidate string.
+ * @param {*} pattern Candidate I-Regexp string.
+ * @param {boolean} full `true` for `match`, `false` for `search`.
+ * @returns {boolean} Whether the complete value or a substring matches.
+ */
+function rfcRegexMatches(value, pattern, full) {
+    if (typeof value !== "string" || typeof pattern !== "string") return false;
+    var scalars = rfcIRegexpScalars(value);
+    if (!scalars) return false;
+    var compiled = rfcIRegexpCompile(pattern);
+    return compiled ? rfcIRegexpRun(compiled, scalars, full) : false;
 }
 
 /**

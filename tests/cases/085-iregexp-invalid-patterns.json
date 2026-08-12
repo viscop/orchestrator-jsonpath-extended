@@ -1,0 +1,21 @@
+{
+  "name": "return false for patterns outside the I-Regexp grammar",
+  "obj": {
+    "items": [
+      { "name": "valid", "value": "a.b", "pattern": "a\\.b" },
+      { "name": "javascript-class", "value": "1", "pattern": "\\d+" },
+      { "name": "lookahead", "value": "a", "pattern": "(?=a)" },
+      { "name": "unknown-property", "value": "A", "pattern": "\\p{BasicLatin}" },
+      { "name": "reversed-range", "value": "a", "pattern": "[z-a]" },
+      { "name": "empty-negated-class", "value": "a", "pattern": "[^]" },
+      { "name": "category-range-end", "value": "a", "pattern": "[a-\\p{L}]" },
+      { "name": "state-limit", "value": "a", "pattern": "a{16385}" },
+      { "name": "quantified-anchor", "value": "a", "pattern": "^*" }
+    ]
+  },
+  "expr": "$.items[?match(@.value, @.pattern)].name",
+  "useDefaultMode": true,
+  "expected": [
+    "valid"
+  ]
+}

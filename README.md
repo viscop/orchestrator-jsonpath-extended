@@ -210,6 +210,14 @@ It accepts all five RFC functions as safe additions,
 while its overlapping query semantics and return behavior remain compatible
 with the historical project implementation. Existing JavaScript expressions
 continue to require the explicit `allowUnsafeEval` escape hatch.
+
+For historical compatibility, `GOESSNER_EXTENDED` expects the query root to be
+an object, an array, or another truthy value. A falsy scalar root (`false`, `0`,
+`""`, or `null`) is not evaluated and returns `undefined`, matching the legacy
+entry-point behavior. Falsy values nested inside an object or array are
+supported. Wrap a scalar when this distinction matters, for example
+`{ value: false }`, or use an RFC mode to query arbitrary JSON root values.
+
 `RFC9535_EXTENDED` preserves RFC behavior for every valid RFC query but accepts
 additional syntax, so it is an RFC-compatible superset rather than the strict
 RFC grammar.
@@ -257,8 +265,8 @@ All five RFC 9535 functions are available in `RFC9535`, `RFC9535_EXTENDED`, and
 | ------------------------ | --------------------------------------------------------------- | -------------------------------------------------------- |
 | `length(value)`          | Number of Unicode characters, array elements, or object members | `$.items[?length(@.name) > 10]`                          |
 | `count(nodes)`           | Number of nodes selected by the argument query                  | `$.items[?count(@.values[*]) >= 2]`                      |
-| `match(value, pattern)`  | `true` when the complete string matches the pattern             | `$.items[?match(@.code, 'ABC-[0-9]+')]`                  |
-| `search(value, pattern)` | `true` when a substring matches the pattern                     | `$.items[?search(@.message, 'error')]`                   |
+| `match(value, pattern)`  | `true` when the complete string matches the I-Regexp             | `$.items[?match(@.code, 'ABC-[0-9]+')]`                  |
+| `search(value, pattern)` | `true` when a substring matches the I-Regexp                     | `$.items[?search(@.message, 'error')]`                   |
 | `value(nodes)`           | The selected value when the argument selects exactly one node   | `$.items[?value(@.codes[?@ == 'primary']) == 'primary']` |
 
 `length()` returns the RFC `Nothing` result for unsupported value types.
@@ -659,15 +667,22 @@ methods, assignments, or other executable JavaScript. Unsupported syntax raises
 a `SyntaxError`.
 
 To bound parser resource usage, an RFC query is limited to 4096 characters and
-64 nesting levels. The Gössner Extended expression parser additionally limits filter
-expressions to 512 tokens and regular-expression patterns to 1024 characters.
+64 nesting levels. The Gössner Extended expression parser additionally limits
+filter expressions to 512 tokens and unsafe JavaScript regular-expression
+literals to 1024 characters. An I-Regexp is limited to 4096 UTF-16 code units,
+64 group nesting levels, and 16384 compiled NFA states.
 
-Regular expressions are supplied as strings to the RFC `match()` and
-`search()` functions in all three modes. `match()` requires the complete value
-to match; `search()` looks for a matching substring. JavaScript regex literals
-and `.test(...)` are rejected by the safe parser and are available only through
-the unsafe compatibility path. Callers that assemble expressions remain
-responsible for their intended query semantics.
+Regular expressions are supplied as RFC 9485 I-Regexp strings to the RFC
+`match()` and `search()` functions in all three modes. `match()` requires the
+complete value to match; `search()` looks for a matching substring. The
+self-contained ES5-compatible engine supports Unicode scalar matching and all
+RFC 9485 general-category escapes, including aggregate categories such as
+`\p{L}` and specific categories such as `\p{Nd}`. Its embedded category data is
+generated from Unicode 16.0.
+
+JavaScript regex literals and `.test(...)` are rejected by the safe parser and
+are available only through the unsafe compatibility path. Callers that
+assemble expressions remain responsible for their intended query semantics.
 
 For compatibility with expressions that use JavaScript Array methods such as
 `.some()`, `.every()`, `.map()`, or `.indexOf()`, trusted callers can explicitly

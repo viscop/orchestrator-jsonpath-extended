@@ -45,6 +45,21 @@ be supplied as the first argument or through `JSONPATH_CTS_PATH`:
 node tests/run-compliance-tests.js C:\path\to\cts.json
 ```
 
+## Regenerate Unicode category data
+
+The Action embeds delta-encoded Unicode 16.0 general-category ranges so its
+RFC 9485 I-Regexp implementation remains ES5-compatible and dependency-free at
+runtime. With a Node.js release that uses Unicode 16.0, regenerate the table
+entries with:
+
+```powershell
+node tests/generate-unicode-category-data.js
+```
+
+The script writes the properties for `RFC_UNICODE_CATEGORY_DATA` to standard
+output. It fails on a different Unicode version so category updates remain an
+explicit change.
+
 ## Run from VS Code
 
 Use the included task:
